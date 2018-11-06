@@ -1,10 +1,15 @@
 function createMap(){
-    //create the map and zooms it in to the US
-    // var map = L.map('mapid').setView([39.82, -98.58], 3);
+   
+    var southWest = new L.LatLng(40.59, -104.38);
+    var northEast = new L.LatLng(48.76, -75.39);
+    var bounds = new L.LatLngBounds(southWest, northEast);
+
     var map = L.map('mapid', {
-    center: [39.82, -98.58],
+    center: [44.74, -89.64],
     zoom: 3,
-    minZoom: 3,
+    minZoom: 7,
+    maxZoom: 11,
+    maxBounds: bounds,
     zoomControl: false
     });
 
@@ -29,8 +34,13 @@ function createMap(){
     var resetZoom = new L.Control.ZoomMin({
         position: 'topright'
     });
-    map.addControl(resetZoom);   
+    map.addControl(resetZoom);
+    
+    
+
     sidebar(map);
+    getData(map);
+    getData2(map);
 
 };
 
@@ -41,6 +51,61 @@ function sidebar(mymap) {
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
         position: 'left',     // left or right
     }).addTo(mymap);  
+}
+
+function pointFire (data, map) {
+    var geojsonMarkerOptions = {
+        radius: 100,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+
+    L.geoJson(data, {
+        pointToLayer: function(feature, latlng){
+            console.log(latlng);
+            return L.circleMarker(latlng, geojsonMarkerOptions)
+        }
+    }).addTo(map);
+}
+
+function addState (data, map){
+    var stateOptions = {
+        weight: 2,
+        opacity: .8,
+        fillOpacity: .2,
+        color: '#636363',
+    }
+    var wiBounds = L.geoJson(data, stateOptions);
+    wiBounds.addTo(map);
+
+}
+
+function getData(map){
+    $.ajax("data2/fire_100_wgs84.json", {
+        dataType: "json",
+        success: function(response){
+            pointFire(response, map);
+        }
+    })
+}
+function getData2(map){
+    $.ajax("data/statebounds500.geojson", {
+        dataType: "json",
+        success: function(response){
+            addState(response, map);
+        }
+    })
+}
+function getData3(map){
+    $.ajax("data/statebounds500.geojson", {
+        dataType: "json",
+        success: function(response){
+            addState(response, map);
+        }
+    })
 }
 
 $(document).ready(createMap);
