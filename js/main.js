@@ -1,10 +1,15 @@
+var map;
+var cntyBnds;
+
+
+
 function createMap(){
    
     var southWest = new L.LatLng(40.59, -104.38);
     var northEast = new L.LatLng(48.76, -75.39);
     var bounds = new L.LatLngBounds(southWest, northEast);
 
-    var map = L.map('mapid', {
+    map = L.map('mapid', {
     center: [44.74, -89.64],
     zoom: 3,
     minZoom: 7,
@@ -41,6 +46,7 @@ function createMap(){
     sidebar(map);
     getData(map);
     getData2(map);
+    getData3(map);
 
 };
 
@@ -55,17 +61,16 @@ function sidebar(mymap) {
 
 function pointFire (data, map) {
     var geojsonMarkerOptions = {
-        radius: 100,
+        radius: 6,
         fillColor: "#ff7800",
         color: "#000",
         weight: 1,
         opacity: 1,
         fillOpacity: 0.8
     };
-
+    
     L.geoJson(data, {
         pointToLayer: function(feature, latlng){
-            console.log(latlng);
             return L.circleMarker(latlng, geojsonMarkerOptions)
         }
     }).addTo(map);
@@ -83,8 +88,29 @@ function addState (data, map){
 
 }
 
+function addCounties (data, map){
+    var cntyOptions = {
+        weight: 1,
+        opacity: .8,
+        fillOpacity: 0,
+        color: '#636363',
+    }
+    cntyBnds = new L.geoJson(data, cntyOptions);
+   
+    
+}
+$('input[value="cntyBnds"]').on('change', function() {
+    var cntyCheck = document.querySelector('input[value="cntyBnds"]');
+    if (cntyCheck.checked){
+        cntyBnds.addTo(map);
+    }
+    if (!cntyCheck.checked){
+        map.removeLayer(cntyBnds);
+    }
+});
+
 function getData(map){
-    $.ajax("data2/fire_100_wgs84.json", {
+    $.ajax("data/wgs2_fire_100.json", {
         dataType: "json",
         success: function(response){
             pointFire(response, map);
@@ -100,10 +126,10 @@ function getData2(map){
     })
 }
 function getData3(map){
-    $.ajax("data/statebounds500.geojson", {
+    $.ajax("data/WI_bnds.json", {
         dataType: "json",
         success: function(response){
-            addState(response, map);
+            addCounties(response, map);
         }
     })
 }
