@@ -12,7 +12,7 @@ function createMap(){
     center: [44.74, -89.64],
     zoom: 3,
     minZoom: 7,
-    maxZoom: 11,
+    maxZoom: 12,
     maxBounds: bounds,
     zoomControl: false
     });
@@ -63,8 +63,7 @@ function sidebar(mymap) {
 
 function pointFire (data, map) {
     var geojsonMarkerOptions = {
-        radius: 6,
-        fillColor: "#ff7800",
+        fillColor: "#f03b20",
         color: "#000",
         weight: 1,
         opacity: 1,
@@ -78,7 +77,33 @@ function pointFire (data, map) {
             var fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
+            var zoom = map.getZoom();
+            if (fAcres < 200){
+                fires_100.setRadius(6);
+            }
+            if (fAcres < 350 && fAcres > 200){
+                fires_100.setRadius(8);
+            }
+            if (fAcres < 600 && fAcres > 350){
+                fires_100.setRadius(10);
+            }
+            if (fAcres < 2000 && fAcres > 600){
+                fires_100.setRadius(12);
+            }
+            if (fAcres > 2000){
+                fires_100.setRadius(14);
+            }
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres);
+            
+            fires_100.on('click', function(e){
+                if (map.getZoom() < 10){
+                    map.setView(e.latlng, 9);
+                }
+                else{
+                    map.setView(e.latlng);
+                }
+
+            });
             return fires_100
         }
     }).bringToFront().addTo(map);
