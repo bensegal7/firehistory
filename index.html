@@ -32,37 +32,54 @@
 		place these within <script> or <style> tags-->
 		
 		<!--put your external script links here-->
-        <div id="mapid"> </div>
-        <div id="sidebar" class="leaflet-sidebar collapsed">
-			<!-- Nav tabs -->
-			<div class="leaflet-sidebar-tabs">
-            <ul role="tablist"> <!-- top aligned tabs -->
-                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
-                <!-- <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li> -->
-                <li><a href="#data" role="tab"><i class="fa fa-download"></i></a></li>
-            </ul>
-			</div>
-		 
-			<!-- Tab panes -->
-			<div class="leaflet-sidebar-content">
-			<div class="leaflet-sidebar-pane" id="home">
-                <h1 class="leaflet-sidebar-header">
-                        WISCONSIN ON FIRE!
-                        <div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
-				</h1>
-				<fieldset id="LayerSelect">
-					<legend class="checkText2"><h4>Select Layers to Add to the Map!</h4> </legend>
-					<div>
-						<input type="checkbox" id="cntyLayer" name="feature"
-							   value="cntyBnds" />
-						<label for="cntyBnds">Wisconsin County Boundaries</label>
-					</div>
-				
-			</fieldset>		
-			</div>
-				
+		<div id="container">
+			<div id="mapid"> </div>
+			<div id="sidebar" class="leaflet-sidebar collapsed">
+				<!-- Nav tabs -->
+				<div class="leaflet-sidebar-tabs">
+				<ul role="tablist"> <!-- top aligned tabs -->
+					<li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+					<!-- <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li> -->
+					<li><a href="#data" role="tab"><i class="fa fa-download"></i></a></li>
+				</ul>
+				</div>
+			 
+				<!-- Tab panes -->
+				<div class="leaflet-sidebar-content">
+				<div class="leaflet-sidebar-pane" id="home">
+					<h1 class="leaflet-sidebar-header">
+							WISCONSIN ON FIRE!
+							<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
+					</h1>
+					<fieldset id="LayerSelect">
+						<legend class="checkText2"><h4>Select Layers to Add to the Map!</h4> </legend>
+						<div>
+							<input type="checkbox" id="cntyLayer" name="feature"
+								   value="cntyBnds" />
+							<label for="cntyBnds">Wisconsin County Boundaries</label>
+						</div>
+						<div>
+							<input type="checkbox" id="ogvegCheck" name="feature"
+								   value="ogVeg" />
+							<label for="ogVeg">Wisconsin Pre-settlement Vegetation</label>
+						</div>
+						<div>
+							<input type="checkbox" id="responseCheck" name="feature"
+								   value="fResponse" />
+							<label for="fResponse">Fire Response Units</label>
+						</div>
+						<div>
+							<input type="checkbox" id="protectCheck" name="feature"
+								   value="fProtect" />
+							<label for="fProtect">Fire Protection Areas</label>
+						</div>
+					</fieldset>		
+				</div>
+					
+				</div>
 			</div>
 		</div>
+        
 		
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="lib/leaflet.js"></script>

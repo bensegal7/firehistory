@@ -1,5 +1,4 @@
 var map;
-var cntyBnds;
 
 
 
@@ -44,9 +43,12 @@ function createMap(){
     
 
     sidebar(map);
-    getData(map);
     getData2(map);
     getData3(map);
+    getData4(map);
+    getData5(map);
+    getData6(map);
+    getData(map);
 
 };
 
@@ -68,12 +70,18 @@ function pointFire (data, map) {
         opacity: 1,
         fillOpacity: 0.8
     };
-    
+    for (var i = 0; i < data.features.length; i++){
+        // console.log(data.features[i].properties.TOTAL_AC);
+    }
     L.geoJson(data, {
         pointToLayer: function(feature, latlng){
-            return L.circleMarker(latlng, geojsonMarkerOptions)
+            var fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+            var fAcres = feature.properties.TOTAL_AC;
+            var fDate = feature.properties.FIREDATE;
+            fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres);
+            return fires_100
         }
-    }).addTo(map);
+    }).bringToFront().addTo(map);
 }
 
 function addState (data, map){
@@ -95,22 +103,81 @@ function addCounties (data, map){
         fillOpacity: 0,
         color: '#636363',
     }
-    cntyBnds = new L.geoJson(data, cntyOptions);
-   
+    var cntyBnds = new L.geoJson(data, cntyOptions);
+    $('input[value="cntyBnds"]').on('change', function() {
+        var cntyCheck = document.querySelector('input[value="cntyBnds"]');
+        if (cntyCheck.checked){
+            cntyBnds.addTo(map);
+            cntyBnds.bringToBack();
+        }
+        if (!cntyCheck.checked){
+            map.removeLayer(cntyBnds);
+        }
+    });
     
 }
-$('input[value="cntyBnds"]').on('change', function() {
-    var cntyCheck = document.querySelector('input[value="cntyBnds"]');
-    if (cntyCheck.checked){
-        cntyBnds.addTo(map);
-    }
-    if (!cntyCheck.checked){
-        map.removeLayer(cntyBnds);
-    }
-});
 
+
+function addPreVeg (data, map){
+    var vegOptions = {
+        weight: 1,
+        opacity: .8,
+        fillOpacity: 0,
+        color: '#636363',
+    }
+    var ogVeg = new L.geoJson(data, vegOptions);
+    $('input[value="ogVeg"]').on('change', function() {
+        var ogVegCheck = document.querySelector('input[value="ogVeg"]');
+        if (ogVegCheck.checked){
+            ogVeg.addTo(map);
+        }
+        if (!ogVegCheck.checked){
+            map.removeLayer(ogVeg);
+        }
+    });
+    
+}
+
+function fireResponse (data, map){
+    var responseOptions = {
+        weight: 1,
+        opacity: .8,
+        fillOpacity: 0,
+        color: '#636363',
+    }
+    var fResponseUnits = new L.geoJson(data, responseOptions);
+    $('input[value="fResponse"]').on('change', function() {
+        var responseCheck = document.querySelector('input[value="fResponse"]');
+        if (responseCheck.checked){
+            fResponseUnits.addTo(map);
+        }
+        if (!responseCheck.checked){
+            map.removeLayer(fResponseUnits);
+        }
+    });
+    
+}
+function fireProtect (data, map){
+    var protectOptions = {
+        weight: 1,
+        opacity: .8,
+        fillOpacity: 0,
+        color: '#636363',
+    }
+    var protectAreas = new L.geoJson(data, protectOptions);
+    $('input[value="fProtect"]').on('change', function() {
+        var protCheck = document.querySelector('input[value="fProtect"]');
+        if (protCheck.checked){
+            protectAreas.addTo(map);
+        }
+        if (!protCheck.checked){
+            map.removeLayer(protectAreas);
+        }
+    });
+    
+}
 function getData(map){
-    $.ajax("data/wgs2_fire_100.json", {
+    $.ajax("data/fires_100_final.geojson", {
         dataType: "json",
         success: function(response){
             pointFire(response, map);
@@ -130,6 +197,30 @@ function getData3(map){
         dataType: "json",
         success: function(response){
             addCounties(response, map);
+        }
+    })
+}
+function getData4(map){
+    $.ajax("data/og_veg_poly.geojson", {
+        dataType: "json",
+        success: function(response){
+            addPreVeg(response, map);
+        }
+    })
+}
+function getData5(map){
+    $.ajax("data/fire_response.geojson", {
+        dataType: "json",
+        success: function(response){
+            fireResponse(response, map);
+        }
+    })
+}
+function getData6(map){
+    $.ajax("data/protection_areas.geojson", {
+        dataType: "json",
+        success: function(response){
+            fireProtect(response, map);
         }
     })
 }
