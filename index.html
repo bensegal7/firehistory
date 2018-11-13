@@ -54,24 +54,39 @@
 					<fieldset id="LayerSelect">
 						<legend class="checkText2"><h4>Select Layers to Add to the Map!</h4> </legend>
 						<div>
-							<input type="checkbox" id="cntyLayer" name="feature"
+							<input type="radio" id="clearLayer" name="feature"
+								   value="clearLayer"  checked="True"  />
+							<label for="clearLayer">Clear Boundaries</label>
+						</div>
+						<div>
+							<input type="radio" id="cntyLayer" name="feature"
 								   value="cntyBnds" />
-							<label for="cntyBnds">Wisconsin County Boundaries</label>
+							<label for="cntyLayer">Wisconsin County Boundaries</label>
+						</div>
+						<div>
+							<input type="radio" id="responseCheck" name="feature"
+								   value="fResponse" />
+							<label for="responseCheck">Fire Response Units</label>
+						</div>
+						<div>
+							<input type="radio" id="protectCheck" name="feature"
+								   value="fProtect" />
+							<label for="protectCheck">Fire Protection Areas</label>
 						</div>
 						<div>
 							<input type="checkbox" id="ogvegCheck" name="feature"
 								   value="ogVeg" />
-							<label for="ogVeg">Wisconsin Pre-settlement Vegetation</label>
+							<label for="ogvegCheck">Wisconsin Pre-settlement Vegetation</label>
 						</div>
 						<div>
-							<input type="checkbox" id="responseCheck" name="feature"
-								   value="fResponse" />
-							<label for="fResponse">Fire Response Units</label>
+							<input type="checkbox" id="fire100Check" name="feature"
+								   value="fire100" />
+							<label for="fire100Check">Fires Greater than 100 acres (1981-Present)</label>
 						</div>
 						<div>
-							<input type="checkbox" id="protectCheck" name="feature"
-								   value="fProtect" />
-							<label for="fProtect">Fire Protection Areas</label>
+							<input type="checkbox" id="firepolyCheck" name="feature"
+								   value="firepoly" />
+							<label for="firepolyCheck">Historic Fire Polygons</label>
 						</div>
 					</fieldset>		
 				</div>
