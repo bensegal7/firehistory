@@ -332,14 +332,13 @@ function getData7(map){
 //       dlayers.addLayer(firePolys)
 //   }
 // }
-$(".open-modal").on('click', function(e){
+$("#dwn").on('click', function(e){
     map.fire('modal', {
-      content: '<h1>Download Layers</h1>' +
-        '<p>Are you sure you want to download the following layers?</p>' + '<button id="dwnload">Yes</button>'
+      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><p>Are you sure you want to download the following layers?</p><button id="dwnload">Yes</button></div></div>'
     });
-  })
-$("#dwnload").on('click',function(e){
-
-})
+    $("#dwnload").on('click',function(e){
+        window.alert("This button works!")
+    });
+  });
 
 $(document).ready(createMap);
