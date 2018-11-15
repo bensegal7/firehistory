@@ -4,6 +4,7 @@ var protectAreas;
 var fResponseUnits;
 var firePolys;
 var firePoint;
+var opacitySlider = new L.Control.opacitySlider();
 function createMap(){
    
     var southWest = new L.LatLng(40.59, -104.38);
@@ -43,6 +44,7 @@ function createMap(){
     map.addControl(resetZoom);
     
     
+    
 
     sidebar(map);
     getData2(map);
@@ -52,9 +54,24 @@ function createMap(){
     getData6(map);
     getData(map);
     getData7(map);
+    getLandCov(map);
     removeBoundaries(map);
 
 };
+function getLandCov(map){
+
+    $('input[value="landcov"]').on('change', function(){
+        var landchecked = document.querySelector('input[value="landcov"]');
+        if (landchecked.checked){
+            var currentLandCover = L.tileLayer('tiles/modernland_cover/{z}/{x}/{y}.png', {
+            }).addTo(map).bringToFront();
+        }
+        if (!landchecked.checked){
+            map.removeLayer(currentLandCover);
+        }
+    })
+  
+}
 
 function sidebar(mymap) {
     var sidebar = L.control.sidebar({
@@ -236,21 +253,27 @@ function fireProtect (data, map){
 
 function addFirePolys(data, map) {
     var firepolyOptions = {
-        weight: 1,
+        weight: 1.5,
         opacity: .8,
         fillOpacity: .8,
-        color: '#de2d26',
+        fillColor: '#de2d26',
+        color: '#99000d',
     }
     firePolys = new L.geoJson(data, firepolyOptions);
     firePolys.addTo(map);
+    // map.addControl(opacitySlider);
+    // opacitySlider.setOpacityLayer(firePolys);
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
         if (cntyCheck.checked){
             firePolys.addTo(map);
             firePoint.bringToFront();
+            // map.addControl(opacitySlider);
+            // opacitySlider.setOpacityLayer(firePolys);
         }
         if (!cntyCheck.checked){
             map.removeLayer(firePolys);
+            map.removeControl(opacitySlider);
         }
     });
 }

@@ -12,6 +12,8 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" >
 		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="lib/L.Control.ZoomMin.css" media="screen">
+		<link rel="stylesheet" href="lib/Control.Opacity.css" media="screen">
+
 
 
 		<!--[if IE<9]>
@@ -79,13 +81,18 @@
 							<label for="ogvegCheck">Wisconsin Pre-settlement Vegetation</label>
 						</div>
 						<div>
+							<input type="checkbox" id="landcovCheck" name="feature"
+								   value="landcov" />
+							<label for="landcovCheck">Current Wisconsin Land Cover</label>
+						</div>
+						<div>
 							<input type="checkbox" id="fire100Check" name="feature"
 								   value="fire100" />
 							<label for="fire100Check">Fires Greater than 100 acres (1981-Present)</label>
 						</div>
 						<div>
 							<input type="checkbox" id="firepolyCheck" name="feature"
-								   value="firepoly" />
+								   value="firepoly" checked="True"/>
 							<label for="firepolyCheck">Historic Fire Polygons</label>
 						</div>
 					</fieldset>		
@@ -99,7 +106,8 @@
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="lib/leaflet.js"></script>
 		<script type="text/javascript" src="lib/leaflet-sidebar.min.js"></script> 
-		<script src="lib/L.Control.ZoomMin.js"></script>
+		<script type="text/javascript" src="lib/L.Control.ZoomMin.js"></script>
+		<script type="text/javascript" src="lib/Control.Opacity.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>   
 	</body>
 </html>
