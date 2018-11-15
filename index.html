@@ -7,11 +7,13 @@
 
 		<!--put your external stylesheet links here-->
 
-        <link rel="stylesheet" href="lib/leaflet.css">
-        <link rel="stylesheet" href="lib/leaflet-sidebar.min.css" >
+    <link rel="stylesheet" href="lib/leaflet.css">
+    <link rel="stylesheet" href="lib/leaflet-sidebar.min.css" >
+		<link rel="stylesheet" href="lib/L.Control.ZoomMin.css" media="screen">
+		<link rel="stylesheet" href="css/topcoat-desktop-light.css">
+		<link rel="stylesheet" href="lib/leaflet.modal.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" >
 		<link rel="stylesheet" href="css/style.css">
-		<link rel="stylesheet" href="lib/L.Control.ZoomMin.css" media="screen">
 
 
 		<!--[if IE<9]>
@@ -49,7 +51,7 @@
 				<div class="leaflet-sidebar-content">
 				<div class="leaflet-sidebar-pane" id="home">
 					<h1 class="leaflet-sidebar-header">
-							WISCONSIN ON FIRE!
+							Wisconsin on Fire
 							<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
 					</h1>
 					<fieldset id="LayerSelect">
@@ -90,6 +92,7 @@
 							<label for="firepolyCheck">Historic Fire Polygons</label>
 						</div>
 					</fieldset>
+					<span class="topcoat-button--large open-modal" style="width:100%"><i class="fa fa-download"></i>	Download</span><br>
 				</div>
 				<div class="leaflet-sidebar-pane" id="about">
 					<h1 class="leaflet-sidebar-header">
@@ -112,9 +115,10 @@
 
 
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
-        <script type="text/javascript" src="lib/leaflet.js"></script>
+    <script type="text/javascript" src="lib/leaflet.js"></script>
 		<script type="text/javascript" src="lib/leaflet-sidebar.min.js"></script>
 		<script src="lib/L.Control.ZoomMin.js"></script>
+		<script src="lib/Leaflet.Modal.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>

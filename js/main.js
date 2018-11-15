@@ -5,7 +5,7 @@ var fResponseUnits;
 var firePolys;
 var firePoint;
 function createMap(){
-   
+
     var southWest = new L.LatLng(40.59, -104.38);
     var northEast = new L.LatLng(48.76, -75.39);
     var bounds = new L.LatLngBounds(southWest, northEast);
@@ -36,13 +36,13 @@ function createMap(){
         "Satellite": satellite,
         "Streets": streets
     };
-    var baseControl = L.control.layers(baseMaps).addTo(map); 
+    var baseControl = L.control.layers(baseMaps).addTo(map);
     var resetZoom = new L.Control.ZoomMin({
         position: 'topright'
     });
     map.addControl(resetZoom);
-    
-    
+
+
 
     sidebar(map);
     getData2(map);
@@ -62,7 +62,7 @@ function sidebar(mymap) {
         closeButton: false,    // whether t add a close button to the panes
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
         position: 'left',     // left or right
-    }).addTo(mymap);  
+    }).addTo(mymap);
 }
 
 function pointFire (data, map) {
@@ -98,7 +98,7 @@ function pointFire (data, map) {
                 fires_100.setRadius(14);
             }
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
-            
+
             fires_100.on('click', function(e){
                 if (map.getZoom() < 10){
                     map.setView(e.latlng, 9);
@@ -120,7 +120,7 @@ function pointFire (data, map) {
             map.removeLayer(firePoint);
         }
     });
-    
+
 }
 
 function addState (data, map){
@@ -137,7 +137,7 @@ function addState (data, map){
 
 function removeBoundaries (map){
     $('input[type=radio][value="clearLayer"]').change(function() {
-        map.removeLayer(fResponseUnits);        
+        map.removeLayer(fResponseUnits);
         map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
     });
@@ -154,7 +154,7 @@ function addCounties (data, map){
     cntyBnds = new L.geoJson(data, cntyOptions);
 
     $('input[type=radio][value="cntyBnds"]').change(function() {
-        map.removeLayer(fResponseUnits);        
+        map.removeLayer(fResponseUnits);
         map.removeLayer(protectAreas);
         var cntyCheck = document.querySelector('input[value="cntyBnds"]');
         if (cntyCheck.checked){
@@ -165,7 +165,7 @@ function addCounties (data, map){
             map.removeLayer(cntyBnds);
         }
     });
-    
+
 }
 
 
@@ -186,7 +186,7 @@ function addPreVeg (data, map){
             map.removeLayer(ogVeg);
         }
     });
-    
+
 }
 
 function fireResponse (data, map){
@@ -209,7 +209,7 @@ function fireResponse (data, map){
             map.removeLayer(fResponseUnits);
         }
     });
-    
+
 }
 function fireProtect (data, map){
     var protectOptions = {
@@ -231,7 +231,7 @@ function fireProtect (data, map){
             map.removeLayer(protectAreas);
         }
     });
-    
+
 }
 
 function addFirePolys(data, map) {
@@ -311,5 +311,16 @@ function getData7(map){
         }
     })
 }
+
+$(".open-modal").on('click', function(e){
+    map.fire('modal', {
+      content: '<h1>Download Layers</h1>' +
+        '<p>Are you sure you want to download the following layers?</p>' +
+        '<ul><li></li><li></li><li><li/></ul>' + '<button id="dwnload">Yes</button>'
+    });
+  })
+$("#dwnload").on('click',function(e){
+
+})
 
 $(document).ready(createMap);
