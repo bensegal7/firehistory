@@ -311,12 +311,31 @@ function getData7(map){
         }
     })
 }
-
+// function layerCheck(map){
+//   var dLayers = L.layerGroup()
+//   if (map.hasLayer(firePoint)){
+//       dlayers.addLayer(firePoint)
+//   }
+//   if (map.hasLayer(fResponseUnits)){
+//       dlayers.addLayer(fResponseUnits)
+//   }
+//   if (map.hasLayer(protectAreas)){
+//       dlayers.addLayer(protectAreas)
+//   }
+//   if (map.hasLayer(cntyBnds)){
+//       dlayers.addLayer(cntyBnds)
+//   }
+//   if (map.hasLayer(ogVeg)){
+//       dlayers.addLayer(ogVeg)
+//   }
+//   if (map.hasLayer(firePolys)){
+//       dlayers.addLayer(firePolys)
+//   }
+// }
 $(".open-modal").on('click', function(e){
     map.fire('modal', {
       content: '<h1>Download Layers</h1>' +
-        '<p>Are you sure you want to download the following layers?</p>' +
-        '<ul><li></li><li></li><li><li/></ul>' + '<button id="dwnload">Yes</button>'
+        '<p>Are you sure you want to download the following layers?</p>' + '<button id="dwnload">Yes</button>'
     });
   })
 $("#dwnload").on('click',function(e){
