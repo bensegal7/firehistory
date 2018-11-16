@@ -342,3 +342,9 @@ $("#dwn").on('click', function(e){
   });
 
 $(document).ready(createMap);
+
+$(window).on('load', function(){
+    map.fire('modal', {
+      content: '<div id="start" class="modal""><div class="modal-header"><h1 style="text-align: center">Wisconsin on Fire</h1><h2 style="text-align: center">An exploratory history of wildfire in Wisconsin</h2></div></div>'
+    });
+});
