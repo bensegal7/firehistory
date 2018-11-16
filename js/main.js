@@ -4,7 +4,10 @@ var protectAreas;
 var fResponseUnits;
 var firePolys;
 var firePoint;
+var currentLandCover;
+var ogVeg;
 var opacitySlider = new L.Control.opacitySlider();
+$("#plyInfo").hide();
 function createMap(){
    
     var southWest = new L.LatLng(40.59, -104.38);
@@ -61,12 +64,16 @@ function createMap(){
 function getLandCov(map){
 
     $('input[value="landcov"]').on('change', function(){
+        map.removeControl(opacitySlider);
         var landchecked = document.querySelector('input[value="landcov"]');
         if (landchecked.checked){
-            var currentLandCover = L.tileLayer('tiles/modernland_cover/{z}/{x}/{y}.png', {
+            currentLandCover = L.tileLayer('tiles/modernland_cover/{z}/{x}/{y}.png', {
             }).addTo(map).bringToFront();
+            map.addControl(opacitySlider);
+            opacitySlider.setOpacityLayer(currentLandCover);
         }
         if (!landchecked.checked){
+            console.log("hello");
             map.removeLayer(currentLandCover);
         }
     })
@@ -79,7 +86,8 @@ function sidebar(mymap) {
         closeButton: false,    // whether t add a close button to the panes
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
         position: 'left',     // left or right
-    }).addTo(mymap);  
+    }).addTo(mymap);
+    sidebar.open('home');  
 }
 
 function pointFire (data, map) {
@@ -153,10 +161,15 @@ function addState (data, map){
 }
 
 function removeBoundaries (map){
-    $('input[type=radio][value="clearLayer"]').change(function() {
+    $('input[type=radio][value="clearBounds"]').change(function() {
         map.removeLayer(fResponseUnits);        
         map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
+    });
+    $('input[type=radio][value="clearCov"]').change(function() {
+        map.removeLayer(currentLandCover);        
+        map.removeLayer(ogVeg);
+        map.removeControl(opacitySlider);
     });
 }
 
@@ -193,7 +206,7 @@ function addPreVeg (data, map){
         fillOpacity: 0,
         color: '#636363',
     }
-    var ogVeg = new L.geoJson(data, vegOptions);
+    ogVeg = new L.geoJson(data, vegOptions);
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
@@ -259,10 +272,27 @@ function addFirePolys(data, map) {
         fillColor: '#de2d26',
         color: '#99000d',
     }
-    firePolys = new L.geoJson(data, firepolyOptions);
+    firePolys = new L.geoJson(data, {
+        style: function(feature){
+            return {
+                weight: 1.5,
+                opacity: .8,
+                fillOpacity: .8,
+                fillColor: '#de2d26',
+                color: '#99000d',
+            }
+        },
+        onEachFeature: function(feature,layer){
+            layer.on({
+                mouseover:highlightFeature,
+                mouseout:resetStyle,
+                click: zoomToFeat
+            })
+
+        }
+    });
     firePolys.addTo(map);
-    // map.addControl(opacitySlider);
-    // opacitySlider.setOpacityLayer(firePolys);
+    
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
         if (cntyCheck.checked){
@@ -277,6 +307,27 @@ function addFirePolys(data, map) {
         }
     });
 }
+
+function highlightFeature (e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 1.5,
+        opacity: .8,
+        fillOpacity: .8,
+        color: '#525252',
+        fillColor: '#737373'
+    })
+}
+function resetStyle (e) {
+    var layer = e.target;
+    firePolys.resetStyle(e.target);
+}
+
+function zoomToFeat(e){
+    map.fitBounds(e.target.getBounds());
+    $("#plyInfo").show();
+}
+
 
 function getData(map){
     $.ajax("data/fires_100_final.geojson", {

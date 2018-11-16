@@ -8,7 +8,8 @@
 		<!--put your external stylesheet links here-->
 	
         <link rel="stylesheet" href="lib/leaflet.css">
-        <link rel="stylesheet" href="lib/leaflet-sidebar.min.css" >
+		<link rel="stylesheet" href="lib/leaflet-sidebar.min.css" >
+		<link rel="stylesheet" href="lib/jquery-ui-1.10.3.custom.min.css" >
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" >
 		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="lib/L.Control.ZoomMin.css" media="screen">
@@ -36,6 +37,7 @@
 		<!--put your external script links here-->
 		<div id="container">
 			<div id="mapid"> </div>
+			<!-- <div id="plyInfo" ></div> -->
 			<div id="sidebar" class="leaflet-sidebar collapsed">
 				<!-- Nav tabs -->
 				<div class="leaflet-sidebar-tabs">
@@ -53,49 +55,59 @@
 							WISCONSIN ON FIRE!
 							<div class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></div>
 					</h1>
-					<fieldset id="LayerSelect">
-						<legend class="checkText2"><h4>Select Layers to Add to the Map!</h4> </legend>
+					<fieldset id="boundSelec">
+						<legend class="checkText2"><h4>Layers</h4> </legend>
 						<div>
-							<input type="radio" id="clearLayer" name="feature"
-								   value="clearLayer"  checked="True"  />
-							<label for="clearLayer">Clear Boundaries</label>
+							<input type="radio" id="clearBounds" name="bounds"
+								   value="clearBounds"  checked="True"  />
+							<label for="clearBounds">Clear Boundaries</label>
 						</div>
 						<div>
-							<input type="radio" id="cntyLayer" name="feature"
+							<input type="radio" id="cntyLayer" name="bounds"
 								   value="cntyBnds" />
 							<label for="cntyLayer">Wisconsin County Boundaries</label>
 						</div>
 						<div>
-							<input type="radio" id="responseCheck" name="feature"
+							<input type="radio" id="responseCheck" name="bounds"
 								   value="fResponse" />
 							<label for="responseCheck">Fire Response Units</label>
 						</div>
 						<div>
-							<input type="radio" id="protectCheck" name="feature"
+							<input type="radio" id="protectCheck" name="bounds"
 								   value="fProtect" />
 							<label for="protectCheck">Fire Protection Areas</label>
 						</div>
+					</fieldset>		
+					<fieldset id="covSelect">
 						<div>
-							<input type="checkbox" id="ogvegCheck" name="feature"
+							<input type="radio" id="clearCov" name="cover"
+									value="clearCov"  checked="True"  />
+							<label for="clearCov">Clear Cover Layer</label>
+						</div>
+						<div>
+							<input type="radio" id="ogvegCheck" name="cover"
 								   value="ogVeg" />
 							<label for="ogvegCheck">Wisconsin Pre-settlement Vegetation</label>
 						</div>
 						<div>
-							<input type="checkbox" id="landcovCheck" name="feature"
+							<input type="radio" id="landcovCheck" name="cover"
 								   value="landcov" />
 							<label for="landcovCheck">Current Wisconsin Land Cover</label>
 						</div>
+					</fieldset>
+					<fieldset id="fireCheck">
 						<div>
 							<input type="checkbox" id="fire100Check" name="feature"
-								   value="fire100" />
+									value="fire100" />
 							<label for="fire100Check">Fires Greater than 100 acres (1981-Present)</label>
 						</div>
 						<div>
 							<input type="checkbox" id="firepolyCheck" name="feature"
-								   value="firepoly" checked="True"/>
+									value="firepoly" checked="True"/>
 							<label for="firepolyCheck">Historic Fire Polygons</label>
 						</div>
-					</fieldset>		
+					</fieldset>
+						
 				</div>
 					
 				</div>
@@ -104,6 +116,7 @@
         
 		
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="lib/jquery-ui-1.10.3.custom.min.js"></script>
         <script type="text/javascript" src="lib/leaflet.js"></script>
 		<script type="text/javascript" src="lib/leaflet-sidebar.min.js"></script> 
 		<script type="text/javascript" src="lib/L.Control.ZoomMin.js"></script>
