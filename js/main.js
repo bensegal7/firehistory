@@ -411,7 +411,23 @@ $("#dwn").on('click', function(e){
       content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><p>Are you sure you want to download the following layers?</p><button id="dwnload">Yes</button></div></div>'
     });
     $("#dwnload").on('click',function(e){
-        window.alert("This button works!")
+        var cntyCheck = document.querySelector('input[value="cntyBnds"]');
+        if (cntyCheck.checked){
+            // var zip = new jsZip();
+            // jsZipUtils.getBinaryContent('data/WI_bnds.json', function(err, data){
+            //     if (err){
+            //         console.log(err);
+            //     }
+            //     zip.file('WI_bnds.json', data);
+            // })
+            saveAs('data/WI_bnds.json', 'WI_bnds.json');
+        }
+        // setTimeout(function(){
+        //     zip.generateAsync({type:"blob"}).then(function(content){
+        //         saveAs(content, "fire.zip")
+        //     })
+        // }, 2000);
+        // window.alert("This button works!")
     });
   });
 
