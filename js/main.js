@@ -6,6 +6,8 @@ var firePolys;
 var firePoint;
 var currentLandCover;
 var ogVeg;
+var fires_100;
+var zoom;
 var opacitySlider = new L.Control.opacitySlider();
 $("#plyInfo").hide();
 function createMap(){
@@ -67,6 +69,7 @@ function getLandCov(map){
         map.removeControl(opacitySlider);
         var landchecked = document.querySelector('input[value="landcov"]');
         if (landchecked.checked){
+            map.removeLayer(ogVeg);
             currentLandCover = L.tileLayer('tiles/modernland_cover/{z}/{x}/{y}.png', {
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
@@ -101,38 +104,57 @@ function pointFire (data, map) {
     for (var i = 0; i < data.features.length; i++){
         // console.log(data.features[i].properties.TOTAL_AC);
     }
+    
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
-            var fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+            fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
-            var zoom = map.getZoom();
-            if (fAcres < 200){
-                fires_100.setRadius(6);
+            zoom = map.getZoom();
+            // if (fAcres < 200){
+            //     fires_100.setRadius(6);
+            // }
+            // if (fAcres < 350 && fAcres > 200){
+            //     fires_100.setRadius(8);
+            // }
+            // if (fAcres < 600 && fAcres > 350){
+            //     fires_100.setRadius(10);
+            // }
+            // if (fAcres < 2000 && fAcres > 600){
+            //     fires_100.setRadius(12);
+            // }
+            // if (fAcres > 2000){
+            //     fires_100.setRadius(14);
+            // }
+            fires_100.setRadius(Math.pow(fAcres, .4));
+            zoom = map.getZoom();
+            console.log(zoom);
+            map.on('moveend', function(e) {
+               console.log("hello");
+            });
+            if(zoom==7){
+                fires_100.setRadius(Math.pow(fAcres, .4));
             }
-            if (fAcres < 350 && fAcres > 200){
-                fires_100.setRadius(8);
+            if(zoom==8){
+                fires_100.setRadius(2*Math.pow(fAcres, .4));
             }
-            if (fAcres < 600 && fAcres > 350){
-                fires_100.setRadius(10);
-            }
-            if (fAcres < 2000 && fAcres > 600){
-                fires_100.setRadius(12);
-            }
-            if (fAcres > 2000){
-                fires_100.setRadius(14);
+            if(zoom==9){
+                fires_100.setRadius(100*Math.pow(fAcres, .4));
             }
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
 
             fires_100.on('click', function(e){
-                if (map.getZoom() < 10){
+                if (zoom < 10){
                     map.setView(e.latlng, 9);
                 }
                 else{
                     map.setView(e.latlng);
                 }
-
             });
+
+            
+
+
             return fires_100
         }
     });
@@ -140,11 +162,16 @@ function pointFire (data, map) {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
             firePoint.addTo(map);
+
         }
         if (!cntyCheck.checked){
             map.removeLayer(firePoint);
         }
     });
+
+}
+
+function pointChange (point) {
 
 }
 
@@ -210,6 +237,7 @@ function addPreVeg (data, map){
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
+            map.removeLayer(currentLandCover);
             ogVeg.addTo(map);
         }
         if (!ogVegCheck.checked){
@@ -408,10 +436,13 @@ function getData7(map){
 // }
 $("#dwn").on('click', function(e){
     map.fire('modal', {
-      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><p>Are you sure you want to download the following layers?</p><button id="dwnload">Yes</button></div></div>'
+      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (JSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="protectDownload" class="downCheck" name="feature"value="protect" /><label for="protectDownload">Fire Protection Areas (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres (1981-Present) (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
     });
     $("#dwnload").on('click',function(e){
-        var cntyCheck = document.querySelector('input[value="cntyBnds"]');
+        $("#allCheck").click(function(){
+            $("#wibndsCheck").attr('checked', 'checked');
+        });
+        var cntyCheck = document.querySelector('input[value="wiBnds"]');
         if (cntyCheck.checked){
             // var zip = new jsZip();
             // jsZipUtils.getBinaryContent('data/WI_bnds.json', function(err, data){
@@ -428,6 +459,31 @@ $("#dwn").on('click', function(e){
         //     })
         // }, 2000);
         // window.alert("This button works!")
+       
+        var response = document.querySelector('input[value="response"]');
+        if(response.checked){
+            saveAs('data/fire_response.geojson', 'fire_response.geojson');
+        }
+        var protect = document.querySelector('input[value="protect"]');
+        if(protect.checked){
+            saveAs('data/protection_areas.geojson', 'protection_areas.geojson');
+        }
+        var veg = document.querySelector('input[value="veg"]');
+        if(veg.checked){
+            saveAs('data/og_veg_poly.geojson', 'presettlement_veg.geojson');
+        }
+        // var cover = document.querySelector('input[value="cover"]');
+        // if(cover.checked){
+        //     saveAs('data/cover.tiff', 'current_land_cover.tiff');
+        // }
+        var points = document.querySelector('input[value="point"]');
+        if(points.checked){
+            saveAs('data/fires_100_final.geojson', 'fires_100_acres.geojson');
+        }
+        var poly = document.querySelector('input[value="poly"]');
+        if(poly.checked){
+            saveAs('data/historic_fires_polys.geojson', 'historic_fires_polys.geojson');
+        }
     });
   });
 
