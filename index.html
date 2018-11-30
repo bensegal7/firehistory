@@ -9,6 +9,7 @@
 
         <link rel="stylesheet" href="lib/leaflet.css">
 		<link rel="stylesheet" href="lib/leaflet-sidebar.min.css" >
+		<link rel="stylesheet" href="lib/L.Control.Sidebar.css" >
 		<link rel="stylesheet" href="lib/jquery-ui-1.10.3.custom.min.css" >
 		<link rel="stylesheet" href="css/topcoat-desktop-light.css">
 		<link rel="stylesheet" href="lib/leaflet.modal.css">
@@ -38,7 +39,6 @@
 		<!--put your external script links here-->
 		<div id="container">
 			<div id="mapid"> </div>
-			<!-- <div id="plyInfo" ></div> -->
 			<div id="sidebar" class="leaflet-sidebar collapsed">
 				<!-- Nav tabs -->
 				<div class="leaflet-sidebar-tabs">
@@ -128,6 +128,12 @@
 				</div>
 				</div>
 			</div>
+			<div id="polyInfoSidebar">
+				<div class="sidebar-container">
+					<span style="font-size: 15px;font-weight: bold;">Information Panel</span> <a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>
+				</div>
+			</div>
+  
 		</div>
 
 
@@ -135,6 +141,7 @@
 		<script type="text/javascript" src="lib/jquery-ui-1.10.3.custom.min.js"></script>
         <script type="text/javascript" src="lib/leaflet.js"></script>
 		<script type="text/javascript" src="lib/leaflet-sidebar.min.js"></script> 
+		<script type="text/javascript" src="lib/L.Control.Sidebar.js"></script> 
 		<script type="text/javascript" src="lib/jszip.min.js"></script> 
 		<script type="text/javascript" src="lib/FileSaver.js"></script> 
 		<script type="text/javascript" src="lib/L.Control.ZoomMin.js"></script>
