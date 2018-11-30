@@ -7,6 +7,7 @@ var firePoint;
 var currentLandCover;
 var ogVeg;
 var opacitySlider = new L.Control.opacitySlider();
+var sidebar;
 $("#plyInfo").hide();
 function createMap(){
 
@@ -45,9 +46,9 @@ function createMap(){
         position: 'topright'
     });
     map.addControl(resetZoom);
-    
-    
-    
+
+
+
 
     sidebar(map);
     getData2(map);
@@ -71,23 +72,25 @@ function getLandCov(map){
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
+            $("#bio").removeClass("disabled");
+            sidebar.open('biophysical')
         }
         if (!landchecked.checked){
             console.log("hello");
             map.removeLayer(currentLandCover);
         }
     })
-  
+
 }
 
 function sidebar(mymap) {
-    var sidebar = L.control.sidebar({
+    sidebar = L.control.sidebar({
         autopan: true,       // whether to maintain the centered map point when opening the sidebar
         closeButton: false,    // whether t add a close button to the panes
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
         position: 'left',     // left or right
     }).addTo(mymap);
-    sidebar.open('home');  
+    sidebar.open('home');
 }
 
 function pointFire (data, map) {
@@ -140,9 +143,12 @@ function pointFire (data, map) {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
             firePoint.addTo(map);
+            $("#future").removeClass("disabled");
+            sidebar.open('trends')
         }
         if (!cntyCheck.checked){
             map.removeLayer(firePoint);
+            $("#future").addClass("disabled");
         }
     });
 
@@ -162,12 +168,15 @@ function addState (data, map){
 
 function removeBoundaries (map){
     $('input[type=radio][value="clearBounds"]').change(function() {
-        map.removeLayer(fResponseUnits);        
+        map.removeLayer(fResponseUnits);
         map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
+        $("#control").addClass("disabled");
     });
     $('input[type=radio][value="clearCov"]').change(function() {
-        map.removeLayer(currentLandCover);        
+        map.removeLayer(currentLandCover);
+        $("#bio").addClass("disabled");
+        $("#oveg").addClass("disabled");
         map.removeLayer(ogVeg);
         map.removeControl(opacitySlider);
     });
@@ -211,9 +220,12 @@ function addPreVeg (data, map){
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
             ogVeg.addTo(map);
+            $("#oveg").removeClass("disabled");
+            sidebar.open('original')
         }
         if (!ogVegCheck.checked){
             map.removeLayer(ogVeg);
+            $("#oveg").addClass("disabled");
         }
     });
 
@@ -234,6 +246,8 @@ function fireResponse (data, map){
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
             fResponseUnits.bringToBack();
+            $("#control").removeClass("disabled");
+            sidebar.open('history')
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
@@ -256,6 +270,8 @@ function fireProtect (data, map){
         if (protCheck.checked){
             protectAreas.addTo(map);
             protectAreas.bringToBack();
+            $("#control").removeClass("disabled");
+            sidebar.open('history')
         }
         if (!protCheck.checked){
             map.removeLayer(protectAreas);
@@ -292,7 +308,7 @@ function addFirePolys(data, map) {
         }
     });
     firePolys.addTo(map);
-    
+
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
         if (cntyCheck.checked){
