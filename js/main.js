@@ -8,6 +8,7 @@ var currentLandCover;
 var ogVeg;
 var fires_100;
 var zoom;
+var sidebar;
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -117,6 +118,8 @@ function getLandCov(map){
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
+            sidebar.open('about');  
+
         }
         if (!landchecked.checked){
             console.log("hello");
@@ -127,7 +130,7 @@ function getLandCov(map){
 }
 
 function sidebar(mymap) {
-    var sidebar = L.control.sidebar({
+    sidebar = L.control.sidebar({
         autopan: true,       // whether to maintain the centered map point when opening the sidebar
         closeButton: false,    // whether t add a close button to the panes
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
