@@ -439,7 +439,6 @@ function addFirePolys(data, map) {
             layer.on({
                 click: panelInfo,
             })
-
         }
     });
     firePolys.addTo(map);
@@ -467,6 +466,7 @@ function panelInfo (e) {
     var layer = e.target;
     console.log(layer);
     $("#polyInfoSidebar").toggle();
+    sidebar.close();
     $("#closepannel").on('click', function(e) {
 
         $("#polyInfoSidebar").hide();
