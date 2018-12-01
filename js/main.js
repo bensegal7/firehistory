@@ -150,48 +150,47 @@ function pointFire (data, map) {
     }
 
 
-    map.on('moveend', function(e) {
-        firePoint = L.geoJson(data, {
-            pointToLayer: function(feature, latlng){
-                fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
-                var fAcres = feature.properties.TOTAL_AC;
-                var fDate = feature.properties.FIREDATE;
-                zoom = map.getZoom();
-                
-                fires_100.setRadius(Math.pow(fAcres, .4));
-                zoom = map.getZoom();
-                console.log(zoom);
-                
-               
-                fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
-    
-                fires_100.on('click', function(e){
-                    if (zoom < 10){
-                        map.setView(e.latlng, 9);
-                    }
-                    else{
-                        map.setView(e.latlng);
-                    }
-                });
-    
-    
-    
-    
-                return fires_100
-            }
-        });
-        $('input[value="fire100"]').on('change', function() {
-            var cntyCheck = document.querySelector('input[value="fire100"]');
-            if (cntyCheck.checked){
-                firePoint.addTo(map);
-                $("#future").removeClass("disabled");
-                sidebar.open('trends')
-            }
-            if (!cntyCheck.checked){
-                map.removeLayer(firePoint);
-                $("#future").addClass("disabled");
-            }
-        });
+   
+    firePoint = L.geoJson(data, {
+        pointToLayer: function(feature, latlng){
+            fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+            var fAcres = feature.properties.TOTAL_AC;
+            var fDate = feature.properties.FIREDATE;
+            zoom = map.getZoom();
+            
+            fires_100.setRadius(Math.pow(fAcres, .4));
+            zoom = map.getZoom();
+            console.log(zoom);
+            
+           
+            fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+
+            fires_100.on('click', function(e){
+                if (zoom < 10){
+                    map.setView(e.latlng, 9);
+                }
+                else{
+                    map.setView(e.latlng);
+                }
+            });
+
+
+
+
+            return fires_100
+        }
+    });
+    $('input[value="fire100"]').on('change', function() {
+        var cntyCheck = document.querySelector('input[value="fire100"]');
+        if (cntyCheck.checked){
+            firePoint.addTo(map);
+            $("#future").removeClass("disabled");
+            sidebar.open('trends')
+        }
+        if (!cntyCheck.checked){
+            map.removeLayer(firePoint);
+            $("#future").addClass("disabled");
+        }
     });
     
 
@@ -216,7 +215,7 @@ function addState (data, map){
 function removeBoundaries (map){
     $('input[type=radio][value="clearBounds"]').change(function() {
         map.removeLayer(fResponseUnits);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
         $("#control").addClass("disabled");
     });
@@ -241,7 +240,7 @@ function addCounties (data, map){
 
     $('input[type=radio][value="cntyBnds"]').change(function() {
         map.removeLayer(fResponseUnits);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         var cntyCheck = document.querySelector('input[value="cntyBnds"]');
         if (cntyCheck.checked){
             cntyBnds.addTo(map);
@@ -266,8 +265,12 @@ function addPreVeg (data, map){
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
-            map.removeLayer(currentLandCover);
+            console.log("hello");
+            if (map.hasLayer(currentLandCover)){
+                map.removeLayer(currentLandCover);
+            }
             ogVeg.addTo(map);
+            ogVeg.bringToBack();
             $("#oveg").removeClass("disabled");
             sidebar.open('original')
         }
@@ -292,7 +295,7 @@ function fireResponse (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .4,
+                    fillOpacity: .3,
                     color: '#636363',
                     fillColor: '#fdc086', 
                 }
@@ -301,7 +304,7 @@ function fireResponse (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .4,
+                    fillOpacity: .3,
                     color: '#636363',
                     fillColor: '#beaed4', 
                 }
@@ -310,7 +313,7 @@ function fireResponse (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .4,
+                    fillOpacity: .3,
                     color: '#636363',
                     fillColor: '#7fc97f', 
                 }
@@ -323,13 +326,17 @@ function fireResponse (data, map){
                 mouseout:resetResponseStyle,
             })
             console.log(feature);
-            layer.bindPopup("Hello");
+            var name = feature.properties.FRU_NAME;
+            var group = feature.properties.DIS_GROUP;
+            var type = feature.properties.PROT_TYPE;
+            console.log(name + group + type);
+            layer.bindPopup("<b>Name: </b>" + feature.properties.FRU_NAME + "<br><b>Group: </b>" + feature.properties.DIS_GROUP + "<br><b>Type: </b>" + feature.properties.PROT_TYPE);
         }
         
     });
     $('input[value="fResponse"]').on('change', function() {
         map.removeLayer(cntyBnds);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         var responseCheck = document.querySelector('input[value="fResponse"]');
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
@@ -348,60 +355,60 @@ function resetResponseStyle (e) {
     fResponseUnits.resetStyle(e.target);
 }
 
-function fireProtect (data, map){
-    var protectOptions = {
-        weight: 1,
-        opacity: .8,
-        fillOpacity: 0,
-        color: '#636363',
-    }
-    protectAreas = new L.geoJson(data, {
-        style: function(feature){
-            if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
-                return{
-                    weight: 1,
-                    opacity: .8,
-                    fillOpacity: .4,
-                    color: '#636363',
-                    fillColor: '#fdc086', 
-                }
-            }
-            if (feature.properties.PROT_TYPE == 'INTENSIVE'){
-                return{
-                    weight: 1,
-                    opacity: .8,
-                    fillOpacity: .4,
-                    color: '#636363',
-                    fillColor: '#beaed4', 
-                }
-            }
-            if (feature.properties.PROT_TYPE == 'COOP'){
-                return{
-                    weight: 1,
-                    opacity: .8,
-                    fillOpacity: .4,
-                    color: '#636363',
-                    fillColor: '#7fc97f', 
-                }
-            }
-        }
-    });
-    $('input[value="fProtect"]').on('change', function() {
-        map.removeLayer(cntyBnds);
-        map.removeLayer(fResponseUnits);
-        var protCheck = document.querySelector('input[value="fProtect"]');
-        if (protCheck.checked){
-            protectAreas.addTo(map);
-            protectAreas.bringToBack();
-            $("#control").removeClass("disabled");
-            sidebar.open('history')
-        }
-        if (!protCheck.checked){
-            map.removeLayer(protectAreas);
-        }
-    });
+// function fireProtect (data, map){
+//     var protectOptions = {
+//         weight: 1,
+//         opacity: .8,
+//         fillOpacity: 0,
+//         color: '#636363',
+//     }
+//     protectAreas = new L.geoJson(data, {
+//         style: function(feature){
+//             if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#fdc086', 
+//                 }
+//             }
+//             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#beaed4', 
+//                 }
+//             }
+//             if (feature.properties.PROT_TYPE == 'COOP'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#7fc97f', 
+//                 }
+//             }
+//         }
+//     });
+//     $('input[value="fProtect"]').on('change', function() {
+//         map.removeLayer(cntyBnds);
+//         map.removeLayer(fResponseUnits);
+//         var protCheck = document.querySelector('input[value="fProtect"]');
+//         if (protCheck.checked){
+//             protectAreas.addTo(map);
+//             protectAreas.bringToBack();
+//             $("#control").removeClass("disabled");
+//             sidebar.open('history')
+//         }
+//         if (!protCheck.checked){
+//             map.removeLayer(protectAreas);
+//         }
+//     });
 
-}
+// }
 
 function addFirePolys(data, map) {
     var firepolyOptions = {
@@ -450,6 +457,8 @@ function addFirePolys(data, map) {
     });
 
 
+
+
 }
 
 function panelInfo (e) {
@@ -459,6 +468,7 @@ function panelInfo (e) {
     $("#closepannel").on('click', function(e) {
 
         $("#polyInfoSidebar").hide();
+        firePolys.addTo(map);
 
     });
 }
@@ -479,8 +489,11 @@ function resetStyle (e) {
 }
 
 function zoomToFeat(e){
+    map.removeLayer(firePolys);
+    e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
     $("#plyInfo").show();
+
 }
 
 
