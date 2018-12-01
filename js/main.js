@@ -471,6 +471,7 @@ function panelInfo (e) {
 
         $("#polyInfoSidebar").hide();
         firePolys.addTo(map);
+        sidebar.open('home');
 
     });
 }
