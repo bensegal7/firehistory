@@ -288,18 +288,42 @@ function fireResponse (data, map){
     }
     fResponseUnits = new L.geoJson(data, {
         style: function (feature) {
-            return {
-                weight: 1,
-                opacity: .8,
-                fillOpacity: 0,
-                color: '#636363',
+            if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .4,
+                    color: '#636363',
+                    fillColor: '#fdc086', 
+                }
             }
+            if (feature.properties.PROT_TYPE == 'INTENSIVE'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .4,
+                    color: '#636363',
+                    fillColor: '#beaed4', 
+                }
+            }
+            if (feature.properties.PROT_TYPE == 'COOP'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .4,
+                    color: '#636363',
+                    fillColor: '#7fc97f', 
+                }
+            }
+            
         },
         onEachFeature: function(feature,layer){
             layer.on({
                 mouseover:highlightFeature,
                 mouseout:resetResponseStyle,
             })
+            console.log(feature);
+            layer.bindPopup("Hello");
         }
         
     });
@@ -309,7 +333,7 @@ function fireResponse (data, map){
         var responseCheck = document.querySelector('input[value="fResponse"]');
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
-            fResponseUnits.bringToBack();
+            fResponseUnits.bringToFront();
             $("#control").removeClass("disabled");
             sidebar.open('history')
         }
@@ -337,7 +361,7 @@ function fireProtect (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .5,
+                    fillOpacity: .4,
                     color: '#636363',
                     fillColor: '#fdc086', 
                 }
@@ -346,7 +370,7 @@ function fireProtect (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .5,
+                    fillOpacity: .4,
                     color: '#636363',
                     fillColor: '#beaed4', 
                 }
@@ -355,7 +379,7 @@ function fireProtect (data, map){
                 return{
                     weight: 1,
                     opacity: .8,
-                    fillOpacity: .5,
+                    fillOpacity: .4,
                     color: '#636363',
                     fillColor: '#7fc97f', 
                 }
