@@ -117,6 +117,7 @@ function getLandCov(map){
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
+            $("#oveg").addClass("disabled");
             $("#bio").removeClass("disabled");
             sidebar.open('biophysical')
         }
@@ -150,19 +151,18 @@ function pointFire (data, map) {
     }
 
 
-   
+
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
             zoom = map.getZoom();
-            
+
             fires_100.setRadius(Math.pow(fAcres, .4));
             zoom = map.getZoom();
             console.log(zoom);
-            
-           
+
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
 
             fires_100.on('click', function(e){
@@ -192,7 +192,7 @@ function pointFire (data, map) {
             $("#future").addClass("disabled");
         }
     });
-    
+
 
 }
 
@@ -271,6 +271,7 @@ function addPreVeg (data, map){
             }
             ogVeg.addTo(map);
             ogVeg.bringToBack();
+            $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
             sidebar.open('original')
         }
@@ -297,7 +298,7 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#fdc086', 
+                    fillColor: '#fdc086',
                 }
             }
             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
@@ -306,7 +307,7 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#beaed4', 
+                    fillColor: '#beaed4',
                 }
             }
             if (feature.properties.PROT_TYPE == 'COOP'){
@@ -315,10 +316,10 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#7fc97f', 
+                    fillColor: '#7fc97f',
                 }
             }
-            
+
         },
         onEachFeature: function(feature,layer){
             layer.on({
@@ -332,7 +333,7 @@ function fireResponse (data, map){
             console.log(name + group + type);
             layer.bindPopup("<b>Name: </b>" + feature.properties.FRU_NAME + "<br><b>Group: </b>" + feature.properties.DIS_GROUP + "<br><b>Type: </b>" + feature.properties.PROT_TYPE);
         }
-        
+
     });
     $('input[value="fResponse"]').on('change', function() {
         map.removeLayer(cntyBnds);
@@ -341,6 +342,7 @@ function fireResponse (data, map){
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
             fResponseUnits.bringToFront();
+            firePolys.bringToFront();
             $("#control").removeClass("disabled");
             sidebar.open('history')
         }
@@ -370,7 +372,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#fdc086', 
+//                     fillColor: '#fdc086',
 //                 }
 //             }
 //             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
@@ -379,7 +381,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#beaed4', 
+//                     fillColor: '#beaed4',
 //                 }
 //             }
 //             if (feature.properties.PROT_TYPE == 'COOP'){
@@ -388,7 +390,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#7fc97f', 
+//                     fillColor: '#7fc97f',
 //                 }
 //             }
 //         }
