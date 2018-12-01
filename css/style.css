@@ -12,7 +12,11 @@
     margin-right: 20px;
 }
 
-#polyInfoSidebar{        
+.text {
+    font-size: 15px;
+}
+
+#polyInfoSidebar{
     height: 440px;
     display: none;
     top:100px;
