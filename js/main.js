@@ -104,6 +104,7 @@ function createMap(){
     getData(map);
     getData7(map);
     getLandCov(map);
+    addPreVeg(map);
     removeBoundaries(map);
 
 };
@@ -206,7 +207,7 @@ function addState (data, map){
         weight: 2,
         opacity: .8,
         fillOpacity: .2,
-        color: '#636363',
+        color: '#252525',
     }
     var wiBounds = L.geoJson(data, stateOptions);
     wiBounds.addTo(map);
@@ -255,22 +256,18 @@ function addCounties (data, map){
 }
 
 
-function addPreVeg (data, map){
-    var vegOptions = {
-        weight: 1,
-        opacity: .8,
-        fillOpacity: 0,
-        color: '#636363',
-    }
-    ogVeg = new L.geoJson(data, vegOptions);
+function addPreVeg (map){
+  
+    ogVeg = L.tileLayer('tiles/original_veg/{z}/{x}/{y}.png', {});    
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
             if (map.hasLayer(currentLandCover)){
                 map.removeLayer(currentLandCover);
             }
-            ogVeg.addTo(map);
-            ogVeg.bringToBack();
+            ogVeg.addTo(map).bringToFront();
+            map.addControl(opacitySlider);
+            opacitySlider.setOpacityLayer(ogVeg);
             $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
             sidebar.open('original')
