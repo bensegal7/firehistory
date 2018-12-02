@@ -468,6 +468,8 @@ function panelInfo (e) {
 
         $("#polyInfoSidebar").hide();
         firePolys.addTo(map);
+        firePoint.bringToFront();
+
         sidebar.open('home');
 
     });
@@ -492,6 +494,7 @@ function zoomToFeat(e){
     map.removeLayer(firePolys);
     e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
+    firePoint.bringToFront();
     $("#plyInfo").show();
 
 }
