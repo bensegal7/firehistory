@@ -8,6 +8,7 @@ var currentLandCover;
 var ogVeg;
 var fires_100;
 var zoom;
+var sidebar;
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -99,7 +100,7 @@ function createMap(){
     getData3(map);
     getData4(map);
     getData5(map);
-    getData6(map);
+    // getData6(map);
     getData(map);
     getData7(map);
     getLandCov(map);
@@ -265,7 +266,6 @@ function addPreVeg (data, map){
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
-            console.log("hello");
             if (map.hasLayer(currentLandCover)){
                 map.removeLayer(currentLandCover);
             }
@@ -326,11 +326,9 @@ function fireResponse (data, map){
                 mouseover:highlightFeature,
                 mouseout:resetResponseStyle,
             })
-            console.log(feature);
             var name = feature.properties.FRU_NAME;
             var group = feature.properties.DIS_GROUP;
             var type = feature.properties.PROT_TYPE;
-            console.log(name + group + type);
             layer.bindPopup("<b>Name: </b>" + feature.properties.FRU_NAME + "<br><b>Group: </b>" + feature.properties.DIS_GROUP + "<br><b>Type: </b>" + feature.properties.PROT_TYPE);
         }
 
@@ -464,7 +462,6 @@ function addFirePolys(data, map) {
 
 function panelInfo (e) {
     var layer = e.target;
-    console.log(layer);
     $("#polyInfoSidebar").toggle();
     sidebar.close();
     $("#closepannel").on('click', function(e) {
@@ -540,16 +537,16 @@ function getData5(map){
         }
     })
 }
-function getData6(map){
-    $.ajax("data/protection_areas.geojson", {
-        dataType: "json",
-        success: function(response){
-            fireProtect(response, map);
-        }
-    })
-}
+// function getData6(map){
+//     $.ajax("data/protection_areas.geojson", {
+//         dataType: "json",
+//         success: function(response){
+//             fireProtect(response, map);
+//         }
+//     })
+// }
 function getData7(map){
-    $.ajax("data/historic_fires_polys.geojson", {
+    $.ajax("data/select_fire_polys.geojson", {
         dataType: "json",
         success: function(response){
             addFirePolys(response, map);
