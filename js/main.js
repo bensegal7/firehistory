@@ -118,11 +118,11 @@ function getLandCov(map){
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
+            $("#oveg").addClass("disabled");
             $("#bio").removeClass("disabled");
             sidebar.open('biophysical')
         }
         if (!landchecked.checked){
-            console.log("hello");
             map.removeLayer(currentLandCover);
         }
     })
@@ -151,42 +151,19 @@ function pointFire (data, map) {
         // console.log(data.features[i].properties.TOTAL_AC);
     }
 
+
+
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
             zoom = map.getZoom();
-            // if (fAcres < 200){
-            //     fires_100.setRadius(6);
-            // }
-            // if (fAcres < 350 && fAcres > 200){
-            //     fires_100.setRadius(8);
-            // }
-            // if (fAcres < 600 && fAcres > 350){
-            //     fires_100.setRadius(10);
-            // }
-            // if (fAcres < 2000 && fAcres > 600){
-            //     fires_100.setRadius(12);
-            // }
-            // if (fAcres > 2000){
-            //     fires_100.setRadius(14);
-            // }
+
             fires_100.setRadius(Math.pow(fAcres, .4));
             zoom = map.getZoom();
             console.log(zoom);
-            map.on('moveend', function(e) {
-               console.log("hello");
-            });
-            if(zoom==7){
-                fires_100.setRadius(Math.pow(fAcres, .4));
-            }
-            if(zoom==8){
-                fires_100.setRadius(2*Math.pow(fAcres, .4));
-            }
-            if(zoom==9){
-                fires_100.setRadius(100*Math.pow(fAcres, .4));
-            }
+
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
 
             fires_100.on('click', function(e){
@@ -217,6 +194,7 @@ function pointFire (data, map) {
         }
     });
 
+
 }
 
 function pointChange (point) {
@@ -238,7 +216,7 @@ function addState (data, map){
 function removeBoundaries (map){
     $('input[type=radio][value="clearBounds"]').change(function() {
         map.removeLayer(fResponseUnits);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
         $("#control").addClass("disabled");
     });
@@ -263,7 +241,7 @@ function addCounties (data, map){
 
     $('input[type=radio][value="cntyBnds"]').change(function() {
         map.removeLayer(fResponseUnits);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         var cntyCheck = document.querySelector('input[value="cntyBnds"]');
         if (cntyCheck.checked){
             cntyBnds.addTo(map);
@@ -288,8 +266,13 @@ function addPreVeg (data, map){
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
-            map.removeLayer(currentLandCover);
+            console.log("hello");
+            if (map.hasLayer(currentLandCover)){
+                map.removeLayer(currentLandCover);
+            }
             ogVeg.addTo(map);
+            ogVeg.bringToBack();
+            $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
             sidebar.open('original')
         }
@@ -308,14 +291,59 @@ function fireResponse (data, map){
         fillOpacity: 0,
         color: '#636363',
     }
-    fResponseUnits = new L.geoJson(data, responseOptions);
+    fResponseUnits = new L.geoJson(data, {
+        style: function (feature) {
+            if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .3,
+                    color: '#636363',
+                    fillColor: '#fdc086',
+                }
+            }
+            if (feature.properties.PROT_TYPE == 'INTENSIVE'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .3,
+                    color: '#636363',
+                    fillColor: '#beaed4',
+                }
+            }
+            if (feature.properties.PROT_TYPE == 'COOP'){
+                return{
+                    weight: 1,
+                    opacity: .8,
+                    fillOpacity: .3,
+                    color: '#636363',
+                    fillColor: '#7fc97f',
+                }
+            }
+
+        },
+        onEachFeature: function(feature,layer){
+            layer.on({
+                mouseover:highlightFeature,
+                mouseout:resetResponseStyle,
+            })
+            console.log(feature);
+            var name = feature.properties.FRU_NAME;
+            var group = feature.properties.DIS_GROUP;
+            var type = feature.properties.PROT_TYPE;
+            console.log(name + group + type);
+            layer.bindPopup("<b>Name: </b>" + feature.properties.FRU_NAME + "<br><b>Group: </b>" + feature.properties.DIS_GROUP + "<br><b>Type: </b>" + feature.properties.PROT_TYPE);
+        }
+
+    });
     $('input[value="fResponse"]').on('change', function() {
         map.removeLayer(cntyBnds);
-        map.removeLayer(protectAreas);
+        // map.removeLayer(protectAreas);
         var responseCheck = document.querySelector('input[value="fResponse"]');
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
-            fResponseUnits.bringToBack();
+            fResponseUnits.bringToFront();
+            firePolys.bringToFront();
             $("#control").removeClass("disabled");
             sidebar.open('history')
         }
@@ -323,32 +351,67 @@ function fireResponse (data, map){
             map.removeLayer(fResponseUnits);
         }
     });
-
 }
-function fireProtect (data, map){
-    var protectOptions = {
-        weight: 1,
-        opacity: .8,
-        fillOpacity: 0,
-        color: '#636363',
-    }
-    protectAreas = new L.geoJson(data, protectOptions);
-    $('input[value="fProtect"]').on('change', function() {
-        map.removeLayer(cntyBnds);
-        map.removeLayer(fResponseUnits);
-        var protCheck = document.querySelector('input[value="fProtect"]');
-        if (protCheck.checked){
-            protectAreas.addTo(map);
-            protectAreas.bringToBack();
-            $("#control").removeClass("disabled");
-            sidebar.open('history')
-        }
-        if (!protCheck.checked){
-            map.removeLayer(protectAreas);
-        }
-    });
 
+function resetResponseStyle (e) {
+    var layer = e.target;
+    fResponseUnits.resetStyle(e.target);
 }
+
+// function fireProtect (data, map){
+//     var protectOptions = {
+//         weight: 1,
+//         opacity: .8,
+//         fillOpacity: 0,
+//         color: '#636363',
+//     }
+//     protectAreas = new L.geoJson(data, {
+//         style: function(feature){
+//             if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#fdc086',
+//                 }
+//             }
+//             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#beaed4',
+//                 }
+//             }
+//             if (feature.properties.PROT_TYPE == 'COOP'){
+//                 return{
+//                     weight: 1,
+//                     opacity: .8,
+//                     fillOpacity: .4,
+//                     color: '#636363',
+//                     fillColor: '#7fc97f',
+//                 }
+//             }
+//         }
+//     });
+//     $('input[value="fProtect"]').on('change', function() {
+//         map.removeLayer(cntyBnds);
+//         map.removeLayer(fResponseUnits);
+//         var protCheck = document.querySelector('input[value="fProtect"]');
+//         if (protCheck.checked){
+//             protectAreas.addTo(map);
+//             protectAreas.bringToBack();
+//             $("#control").removeClass("disabled");
+//             sidebar.open('history')
+//         }
+//         if (!protCheck.checked){
+//             map.removeLayer(protectAreas);
+//         }
+//     });
+
+// }
 
 function addFirePolys(data, map) {
     var firepolyOptions = {
@@ -377,7 +440,6 @@ function addFirePolys(data, map) {
             layer.on({
                 click: panelInfo,
             })
-
         }
     });
     firePolys.addTo(map);
@@ -397,15 +459,20 @@ function addFirePolys(data, map) {
     });
 
 
+
+
 }
 
 function panelInfo (e) {
     var layer = e.target;
     console.log(layer);
     $("#polyInfoSidebar").toggle();
+    sidebar.close();
     $("#closepannel").on('click', function(e) {
 
         $("#polyInfoSidebar").hide();
+        firePolys.addTo(map);
+        sidebar.open('home');
 
     });
 }
@@ -426,8 +493,11 @@ function resetStyle (e) {
 }
 
 function zoomToFeat(e){
+    map.removeLayer(firePolys);
+    e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
     $("#plyInfo").show();
+
 }
 
 
