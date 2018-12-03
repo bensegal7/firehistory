@@ -197,7 +197,6 @@ function pointFire (data, map) {
 }
 
 function pointChange (point) {
-
 }
 
 function addState (data, map){
@@ -228,7 +227,6 @@ function removeBoundaries (map){
     });
 }
 
-
 function addCounties (data, map){
     var cntyOptions = {
         weight: 1,
@@ -252,7 +250,6 @@ function addCounties (data, map){
     });
 
 }
-
 
 function addPreVeg (data, map){
     var vegOptions = {
@@ -341,6 +338,7 @@ function fireResponse (data, map){
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
             fResponseUnits.bringToFront();
+            firePolys.bringToFront();
             $("#control").removeClass("disabled");
             sidebar.open('history')
         }
@@ -464,12 +462,11 @@ function addFirePolys(data, map) {
 function panelInfo (e) {
     var layer = e.target;
     console.log(layer);
+    $("#polyInforSidebar")
     $("#polyInfoSidebar").toggle();
     $("#closepannel").on('click', function(e) {
-
         $("#polyInfoSidebar").hide();
         firePolys.addTo(map);
-
     });
 }
 
