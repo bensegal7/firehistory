@@ -122,7 +122,6 @@ function getLandCov(map){
             opacitySlider.setOpacityLayer(currentLandCover);
             $("#oveg").addClass("disabled");
             $("#bio").removeClass("disabled");
-            sidebar.open('biophysical')
         }
         if (!landchecked.checked){
             map.removeLayer(currentLandCover);
@@ -188,7 +187,6 @@ function pointFire (data, map) {
         if (cntyCheck.checked){
             firePoint.addTo(map);
             $("#future").removeClass("disabled");
-            sidebar.open('trends')
         }
         if (!cntyCheck.checked){
             map.removeLayer(firePoint);
@@ -226,9 +224,11 @@ function removeBoundaries (map){
         if (map.hasLayer(currentLandCover)){
             map.removeLayer(currentLandCover);
         }
+        if (map.hasLayer(ogVeg)){
+            map.removeLayer(ogVeg);
+        }
         $("#bio").addClass("disabled");
         $("#oveg").addClass("disabled");
-        map.removeLayer(ogVeg);
         map.removeControl(opacitySlider);
     });
 }
@@ -260,8 +260,8 @@ function addCounties (data, map){
 
 
 function addPreVeg (map){
-  
-    ogVeg = L.tileLayer('tiles/original_veg/{z}/{x}/{y}.png', {});    
+
+    ogVeg = L.tileLayer('tiles/original_veg/{z}/{x}/{y}.png', {});
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
@@ -273,7 +273,6 @@ function addPreVeg (map){
             opacitySlider.setOpacityLayer(ogVeg);
             $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
-            sidebar.open('original')
         }
         if (!ogVegCheck.checked){
             map.removeLayer(ogVeg);
@@ -342,7 +341,6 @@ function fireResponse (data, map){
             fResponseUnits.bringToFront();
             firePolys.bringToFront();
             $("#control").removeClass("disabled");
-            sidebar.open('history')
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
