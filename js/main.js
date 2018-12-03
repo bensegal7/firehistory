@@ -106,6 +106,7 @@ function createMap(){
     getLandCov(map);
     addPreVeg(map);
     removeBoundaries(map);
+    createLeg(map);
 
 };
 function getLandCov(map){
@@ -220,8 +221,12 @@ function removeBoundaries (map){
         $("#control").addClass("disabled");
     });
     $('input[type=radio][value="clearCov"]').change(function() {
-        map.removeLayer(currentLandCover);
-        map.removeLayer(ogVeg);
+        if (map.hasLayer(currentLandCover)){
+            map.removeLayer(currentLandCover);
+        }
+        if (map.hasLayer(ogVeg)){
+            map.removeLayer(ogVeg);
+        }
         $("#bio").addClass("disabled");
         $("#oveg").addClass("disabled");
         map.removeControl(opacitySlider);
@@ -447,10 +452,6 @@ function addFirePolys(data, map) {
             map.removeControl(opacitySlider);
         }
     });
-
-
-
-
 }
 
 function panelInfo (e) {
@@ -492,6 +493,38 @@ function zoomToFeat(e){
 
 }
 
+function createLeg (map) {
+    var legendControl = L.Control.extend({
+        options: {
+            positions: 'topright'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            $(container).append('<div id="pointLegend"');
+            var svg = '<svg id="attribute-legend" width="160px" height="80px">';
+            var circles = {
+                max: 20,
+                mean: 40,
+                min: 20
+            }
+
+            for (var circle in circles) {
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" cx="38"/>';
+
+                svg += '<text id"' + circle + '-text" x="75" y="' + (circles[circle]+11) + '"></text>';
+            }
+            svg += "</svg>";
+            $(container).append(svg);
+            return container;
+        }
+
+    });
+    console.log("hello");
+    map.addControl(new legendControl());
+
+}
 
 function getData(map){
     $.ajax("data/fires_100_final.geojson", {
@@ -572,7 +605,7 @@ function getData7(map){
 // }
 $("#dwn").on('click', function(e){
     map.fire('modal', {
-      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="protectDownload" class="downCheck" name="feature"value="protect" /><label for="protectDownload">Fire Protection Areas (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres 1981-Present (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
+      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres 1981-Present (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
     });
     $("#dwnload").on('click',function(e){
         $("#allCheck").click(function(){
