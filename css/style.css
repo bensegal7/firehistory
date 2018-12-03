@@ -16,6 +16,10 @@
     font-size: 15px;
 }
 
+.leaflet-sidebar-tabs>ul>li.disabled {
+    color: #eff1f100;
+}
+
 #polyInfoSidebar{
     height: 440px;
     display: none;
