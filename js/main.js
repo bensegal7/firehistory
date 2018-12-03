@@ -106,6 +106,7 @@ function createMap(){
     getLandCov(map);
     addPreVeg(map);
     removeBoundaries(map);
+    createLeg(map);
 
 };
 function getLandCov(map){
@@ -222,7 +223,9 @@ function removeBoundaries (map){
         $("#control").addClass("disabled");
     });
     $('input[type=radio][value="clearCov"]').change(function() {
-        map.removeLayer(currentLandCover);
+        if (map.hasLayer(currentLandCover)){
+            map.removeLayer(currentLandCover);
+        }
         $("#bio").addClass("disabled");
         $("#oveg").addClass("disabled");
         map.removeLayer(ogVeg);
@@ -451,10 +454,6 @@ function addFirePolys(data, map) {
             map.removeControl(opacitySlider);
         }
     });
-
-
-
-
 }
 
 function panelInfo (e) {
@@ -496,6 +495,38 @@ function zoomToFeat(e){
 
 }
 
+function createLeg (map) {
+    var legendControl = L.Control.extend({
+        options: {
+            positions: 'topright'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            $(container).append('<div id="pointLegend"');
+            var svg = '<svg id="attribute-legend" width="160px" height="80px">';
+            var circles = {
+                max: 20,
+                mean: 40,
+                min: 20
+            }
+
+            for (var circle in circles) {
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" cx="38"/>';
+
+                svg += '<text id"' + circle + '-text" x="75" y="' + (circles[circle]+11) + '"></text>';
+            }
+            svg += "</svg>";
+            $(container).append(svg);
+            return container;
+        }
+
+    });
+    console.log("hello");
+    map.addControl(new legendControl());
+
+}
 
 function getData(map){
     $.ajax("data/fires_100_final.geojson", {
