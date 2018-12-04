@@ -9,6 +9,7 @@ var ogVeg;
 var fires_100;
 var zoom;
 var sidebar;
+var acres = [];
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -106,7 +107,6 @@ function createMap(){
     getLandCov(map);
     addPreVeg(map);
     removeBoundaries(map);
-    createLeg(map);
 
 };
 function getLandCov(map){
@@ -153,17 +153,15 @@ function pointFire (data, map) {
     }
 
 
-
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
             zoom = map.getZoom();
-
+            acres.push(fAcres);
             fires_100.setRadius(Math.pow(fAcres, .4));
             zoom = map.getZoom();
-            console.log(zoom);
 
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
 
@@ -181,14 +179,18 @@ function pointFire (data, map) {
 
             return fires_100
         }
-    });
+    }).addTo(map);
+    createLeg(map);
     $('input[value="fire100"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
             firePoint.addTo(map);
+            $(".legend-control-container.leaflet-control").show();
+            createLeg(map);
             $("#future").removeClass("disabled");
         }
         if (!cntyCheck.checked){
+            $(".legend-control-container.leaflet-control").hide();
             map.removeLayer(firePoint);
             $("#future").addClass("disabled");
         }
@@ -198,7 +200,6 @@ function pointFire (data, map) {
 }
 
 function pointChange (point) {
-
 }
 
 function addState (data, map){
@@ -232,7 +233,6 @@ function removeBoundaries (map){
         map.removeControl(opacitySlider);
     });
 }
-
 
 function addCounties (data, map){
     var cntyOptions = {
@@ -459,7 +459,6 @@ function panelInfo (e) {
     $("#polyInfoSidebar").toggle();
     sidebar.close();
     $("#closepannel").on('click', function(e) {
-
         $("#polyInfoSidebar").hide();
         firePolys.addTo(map);
         firePoint.bringToFront();
@@ -496,24 +495,26 @@ function zoomToFeat(e){
 function createLeg (map) {
     var legendControl = L.Control.extend({
         options: {
-            positions: 'topright'
+            positions: 'bottomleft'
         },
 
         onAdd: function (map) {
             var container = L.DomUtil.create('div', 'legend-control-container');
 
-            $(container).append('<div id="pointLegend"');
-            var svg = '<svg id="attribute-legend" width="160px" height="80px">';
+            $(container).append('<div id="pointLegend"</div>');
+            var svg = '<svg id="attribute-legend" width="160px" height="100px" >';
             var circles = {
-                max: 20,
+                max: 60,
                 mean: 40,
                 min: 20
+                
             }
 
             for (var circle in circles) {
-                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" cx="38"/>';
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0" stroke="black" cx="42"/>';
 
-                svg += '<text id"' + circle + '-text" x="75" y="' + (circles[circle]+11) + '"></text>';
+                svg += '<text id="' + circle + '-text" x="85" y="' + (circles[circle]+11) + '"></text>';
+                
             }
             svg += "</svg>";
             $(container).append(svg);
@@ -521,8 +522,55 @@ function createLeg (map) {
         }
 
     });
-    console.log("hello");
     map.addControl(new legendControl());
+    updateLeg(map);
+    
+}
+
+function updateLeg (map) {
+    var content = "<b>Fire Size (Acres)</b>";
+    $("#pointLegend").html(content);
+    var min = 10000,
+        max = -1000;
+
+    for (var i =0; i<acres.length; i++) {
+        var attribute = acres[i];
+        if (attribute < min){
+            min = attribute;
+        }
+        if (attribute > max){
+            max = attribute;
+        }
+    }
+
+    //set mean
+    var mean = (max + min) / 2;
+    //Step 3: assign the cy and r attributes
+
+    var circleValues = {
+        max: min,
+        mean: mean,
+        min: max
+    }
+
+    for (var key in circleValues){
+        var radius = calcRadius(circleValues[key]);
+        $('#'+key).attr({
+            cy: 80 - radius ,
+            r: radius
+        });
+        //Step 4: add legend text
+        $('#'+key+'-text').text(Math.round(circleValues[key]));
+        console.log('#'+key+'-text');
+    }
+
+}
+
+function calcRadius (attribute){
+
+    var radius = Math.pow(attribute, .4);
+    return radius;
+
 
 }
 
