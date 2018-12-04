@@ -59,3 +59,8 @@
 .leaflet-control-zoom.leaflet-bar.leaflet-control {
     margin-right: 26px;
 }
+
+.pointLegend {
+    position: absolue;
+    /* margin-top: 500px; */
+}
