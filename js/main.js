@@ -507,6 +507,7 @@ function createLeg (map) {
                 max: 60,
                 mean: 40,
                 min: 20
+                
             }
 
             for (var circle in circles) {
