@@ -8,6 +8,8 @@ var currentLandCover;
 var ogVeg;
 var fires_100;
 var zoom;
+var sidebar;
+var acres = [];
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -99,10 +101,11 @@ function createMap(){
     getData3(map);
     getData4(map);
     getData5(map);
-    getData6(map);
+    // getData6(map);
     getData(map);
     getData7(map);
     getLandCov(map);
+    addPreVeg(map);
     removeBoundaries(map);
 
 };
@@ -117,8 +120,8 @@ function getLandCov(map){
             }).addTo(map).bringToFront();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
+            $("#oveg").addClass("disabled");
             $("#bio").removeClass("disabled");
-            sidebar.open('biophysical')
         }
         if (!landchecked.checked){
             map.removeLayer(currentLandCover);
@@ -150,19 +153,16 @@ function pointFire (data, map) {
     }
 
 
-   
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
             var fAcres = feature.properties.TOTAL_AC;
             var fDate = feature.properties.FIREDATE;
             zoom = map.getZoom();
-            
+            acres.push(fAcres);
             fires_100.setRadius(Math.pow(fAcres, .4));
             zoom = map.getZoom();
-            console.log(zoom);
-            
-           
+
             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
 
             fires_100.on('click', function(e){
@@ -179,20 +179,23 @@ function pointFire (data, map) {
 
             return fires_100
         }
-    });
+    }).addTo(map);
+    createLeg(map);
     $('input[value="fire100"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
             firePoint.addTo(map);
+            $(".legend-control-container.leaflet-control").show();
+            createLeg(map);
             $("#future").removeClass("disabled");
-            sidebar.open('trends')
         }
         if (!cntyCheck.checked){
+            $(".legend-control-container.leaflet-control").hide();
             map.removeLayer(firePoint);
             $("#future").addClass("disabled");
         }
     });
-    
+
 
 }
 
@@ -204,7 +207,7 @@ function addState (data, map){
         weight: 2,
         opacity: .8,
         fillOpacity: .2,
-        color: '#636363',
+        color: '#252525',
     }
     var wiBounds = L.geoJson(data, stateOptions);
     wiBounds.addTo(map);
@@ -219,10 +222,14 @@ function removeBoundaries (map){
         $("#control").addClass("disabled");
     });
     $('input[type=radio][value="clearCov"]').change(function() {
-        map.removeLayer(currentLandCover);
+        if (map.hasLayer(currentLandCover)){
+            map.removeLayer(currentLandCover);
+        }
+        if (map.hasLayer(ogVeg)){
+            map.removeLayer(ogVeg);
+        }
         $("#bio").addClass("disabled");
         $("#oveg").addClass("disabled");
-        map.removeLayer(ogVeg);
         map.removeControl(opacitySlider);
     });
 }
@@ -251,25 +258,21 @@ function addCounties (data, map){
 
 }
 
-function addPreVeg (data, map){
-    var vegOptions = {
-        weight: 1,
-        opacity: .8,
-        fillOpacity: 0,
-        color: '#636363',
-    }
-    ogVeg = new L.geoJson(data, vegOptions);
+
+function addPreVeg (map){
+
+    ogVeg = L.tileLayer('tiles/original_veg/{z}/{x}/{y}.png', {});
     $('input[value="ogVeg"]').on('change', function() {
         var ogVegCheck = document.querySelector('input[value="ogVeg"]');
         if (ogVegCheck.checked){
-            console.log("hello");
             if (map.hasLayer(currentLandCover)){
                 map.removeLayer(currentLandCover);
             }
-            ogVeg.addTo(map);
-            ogVeg.bringToBack();
+            ogVeg.addTo(map).bringToFront();
+            map.addControl(opacitySlider);
+            opacitySlider.setOpacityLayer(ogVeg);
+            $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
-            sidebar.open('original')
         }
         if (!ogVegCheck.checked){
             map.removeLayer(ogVeg);
@@ -294,7 +297,7 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#fdc086', 
+                    fillColor: '#fdc086',
                 }
             }
             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
@@ -303,7 +306,7 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#beaed4', 
+                    fillColor: '#beaed4',
                 }
             }
             if (feature.properties.PROT_TYPE == 'COOP'){
@@ -312,24 +315,22 @@ function fireResponse (data, map){
                     opacity: .8,
                     fillOpacity: .3,
                     color: '#636363',
-                    fillColor: '#7fc97f', 
+                    fillColor: '#7fc97f',
                 }
             }
-            
+
         },
         onEachFeature: function(feature,layer){
             layer.on({
                 mouseover:highlightFeature,
                 mouseout:resetResponseStyle,
             })
-            console.log(feature);
             var name = feature.properties.FRU_NAME;
             var group = feature.properties.DIS_GROUP;
             var type = feature.properties.PROT_TYPE;
-            console.log(name + group + type);
             layer.bindPopup("<b>Name: </b>" + feature.properties.FRU_NAME + "<br><b>Group: </b>" + feature.properties.DIS_GROUP + "<br><b>Type: </b>" + feature.properties.PROT_TYPE);
         }
-        
+
     });
     $('input[value="fResponse"]').on('change', function() {
         map.removeLayer(cntyBnds);
@@ -340,7 +341,6 @@ function fireResponse (data, map){
             fResponseUnits.bringToFront();
             firePolys.bringToFront();
             $("#control").removeClass("disabled");
-            sidebar.open('history')
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
@@ -368,7 +368,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#fdc086', 
+//                     fillColor: '#fdc086',
 //                 }
 //             }
 //             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
@@ -377,7 +377,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#beaed4', 
+//                     fillColor: '#beaed4',
 //                 }
 //             }
 //             if (feature.properties.PROT_TYPE == 'COOP'){
@@ -386,7 +386,7 @@ function resetResponseStyle (e) {
 //                     opacity: .8,
 //                     fillOpacity: .4,
 //                     color: '#636363',
-//                     fillColor: '#7fc97f', 
+//                     fillColor: '#7fc97f',
 //                 }
 //             }
 //         }
@@ -435,7 +435,6 @@ function addFirePolys(data, map) {
             layer.on({
                 click: panelInfo,
             })
-
         }
     });
     firePolys.addTo(map);
@@ -453,20 +452,19 @@ function addFirePolys(data, map) {
             map.removeControl(opacitySlider);
         }
     });
-
-
-
-
 }
 
 function panelInfo (e) {
     var layer = e.target;
-    console.log(layer);
-    $("#polyInforSidebar")
     $("#polyInfoSidebar").toggle();
+    sidebar.close();
     $("#closepannel").on('click', function(e) {
         $("#polyInfoSidebar").hide();
         firePolys.addTo(map);
+        firePoint.bringToFront();
+
+        sidebar.open('home');
+
     });
 }
 
@@ -489,10 +487,91 @@ function zoomToFeat(e){
     map.removeLayer(firePolys);
     e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
+    firePoint.bringToFront();
     $("#plyInfo").show();
 
 }
 
+function createLeg (map) {
+    var legendControl = L.Control.extend({
+        options: {
+            positions: 'bottomleft'
+        },
+
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            $(container).append('<div id="pointLegend"</div>');
+            var svg = '<svg id="attribute-legend" width="160px" height="100px" >';
+            var circles = {
+                max: 60,
+                mean: 40,
+                min: 20
+            }
+
+            for (var circle in circles) {
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0" stroke="black" cx="42"/>';
+
+                svg += '<text id="' + circle + '-text" x="85" y="' + (circles[circle]+11) + '"></text>';
+                
+            }
+            svg += "</svg>";
+            $(container).append(svg);
+            return container;
+        }
+
+    });
+    map.addControl(new legendControl());
+    updateLeg(map);
+    
+}
+
+function updateLeg (map) {
+    var content = "<b>Fire Size (Acres)</b>";
+    $("#pointLegend").html(content);
+    var min = 10000,
+        max = -1000;
+
+    for (var i =0; i<acres.length; i++) {
+        var attribute = acres[i];
+        if (attribute < min){
+            min = attribute;
+        }
+        if (attribute > max){
+            max = attribute;
+        }
+    }
+
+    //set mean
+    var mean = (max + min) / 2;
+    //Step 3: assign the cy and r attributes
+
+    var circleValues = {
+        max: min,
+        mean: mean,
+        min: max
+    }
+
+    for (var key in circleValues){
+        var radius = calcRadius(circleValues[key]);
+        $('#'+key).attr({
+            cy: 80 - radius ,
+            r: radius
+        });
+        //Step 4: add legend text
+        $('#'+key+'-text').text(Math.round(circleValues[key]));
+        console.log('#'+key+'-text');
+    }
+
+}
+
+function calcRadius (attribute){
+
+    var radius = Math.pow(attribute, .4);
+    return radius;
+
+
+}
 
 function getData(map){
     $.ajax("data/fires_100_final.geojson", {
@@ -534,16 +613,16 @@ function getData5(map){
         }
     })
 }
-function getData6(map){
-    $.ajax("data/protection_areas.geojson", {
-        dataType: "json",
-        success: function(response){
-            fireProtect(response, map);
-        }
-    })
-}
+// function getData6(map){
+//     $.ajax("data/protection_areas.geojson", {
+//         dataType: "json",
+//         success: function(response){
+//             fireProtect(response, map);
+//         }
+//     })
+// }
 function getData7(map){
-    $.ajax("data/historic_fires_polys.geojson", {
+    $.ajax("data/select_fire_polys.geojson", {
         dataType: "json",
         success: function(response){
             addFirePolys(response, map);
@@ -573,7 +652,7 @@ function getData7(map){
 // }
 $("#dwn").on('click', function(e){
     map.fire('modal', {
-      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="protectDownload" class="downCheck" name="feature"value="protect" /><label for="protectDownload">Fire Protection Areas (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres 1981-Present (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
+      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres 1981-Present (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
     });
     $("#dwnload").on('click',function(e){
         $("#allCheck").click(function(){

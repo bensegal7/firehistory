@@ -12,7 +12,15 @@
     margin-right: 20px;
 }
 
-#polyInfoSidebar{        
+.text {
+    font-size: 15px;
+}
+
+.leaflet-sidebar-tabs>ul>li.disabled {
+    color: #eff1f100;
+}
+
+#polyInfoSidebar{
     height: 440px;
     display: none;
     top:100px;
@@ -50,8 +58,15 @@
 
 .opacity_slider_control.ui-slider.ui-slider-vertical.ui-widget.ui-widget-content.ui-corner-all.leaflet-control {
     margin-right: 35px;
+    bottom: 100px;
 }
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control {
     margin-right: 26px;
 }
+
+.legend-control-container.leaflet-control {
+    top: 330px;
+}
+
+
