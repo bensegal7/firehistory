@@ -77,3 +77,9 @@
     padding-top: 10px;
     margin-left: 67px;
 }
+.skip {
+    margin-bottom: 3px;
+    position:relative;
+    padding: 2px 7px;
+    font-size: 20px;
+}
