@@ -188,6 +188,8 @@ function pointFire (data, map) {
     }).addTo(map);
     createLeg(map);
     createSequenceControls(map,data);
+    $('#sliderInfo').html('1850 - 1899');
+
 
     $('input[value="fire100"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="fire100"]');
@@ -530,8 +532,11 @@ function createLeg (map) {
         }
 
     });
+
+    if (legCount == 0){
+        map.addControl(new legendControl());
+    }
         
-    map.addControl(new legendControl());
     
     legCount+=1;
 
@@ -583,7 +588,7 @@ function createSequenceControls (map, data){
 
      //set slider attributes
     $('.range-slider').attr({
-        max: 10,
+        max: 9,
         min: 0,
         value: 0,
         step: 1
@@ -661,6 +666,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1850 - 1899');
         }
         if(index==1){
             firePoint = L.geoJson(data, {
@@ -690,6 +696,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1900 - 1919');
+
         }
         if(index==2){
             firePoint = L.geoJson(data, {
@@ -719,6 +727,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1920 - 1939');
+
         }
         if(index==3){
             firePoint = L.geoJson(data, {
@@ -748,6 +758,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1940 - 1959');
+
         }
         if(index==4){
             firePoint = L.geoJson(data, {
@@ -777,6 +789,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1960 - 1969');
+
         }
         if(index==5){
             firePoint = L.geoJson(data, {
@@ -806,6 +820,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1970 - 1979');
+
         }
         if(index==6){
             firePoint = L.geoJson(data, {
@@ -835,6 +851,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1980 - 1989');
+
         }
         if(index==7){
             firePoint = L.geoJson(data, {
@@ -864,6 +882,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('1990 - 1999');
+
         }
         if(index==8){
             firePoint = L.geoJson(data, {
@@ -893,6 +913,8 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('2000 - 2009');
+
         }
         if(index==9){
             firePoint = L.geoJson(data, {
@@ -922,6 +944,357 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
+            $('#sliderInfo').html('2010 - 2020');
+        }
+    });
+    // Step 5: input listener for slider
+    $('.range-slider').on('input', function(){
+        //Step 6: get the new index value
+        var index = $(this).val();
+
+        //get the old index value
+        var index = $('.range-slider').val();
+
+        //Step 6: increment or decrement depending on button clicked
+        if ($(this).attr('id') == 'forward'){
+            index++;
+            //Step 7: if past the last attribute, wrap around to first attribute
+            index = index > (9) ? 0 : index;
+        } else if ($(this).attr('id') == 'reverse'){
+            index--;
+            //Step 7: if past the first attribute, wrap around to last attribute
+            index = index < 0 ? (9) : index;
+
+        };
+
+        //Step 8: update slider
+        $('.range-slider').val(index);
+
+        map.eachLayer(function (layer) {
+            if(layer.feature && layer.feature.geometry){
+                if(layer.feature.geometry.type == "Point"){
+                    map.removeLayer(layer);
+                }
+            }
+        });
+
+        var geojsonMarkerOptions = {
+            fillColor: "#8856a7",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+
+        acres=[];
+        
+        if(index==0){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1850 && feature.properties.FIRE_YR < 1900){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1850 - 1899');
+        }
+        if(index==1){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1900 && feature.properties.FIRE_YR < 1920){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1900 - 1919');
+
+        }
+        if(index==2){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1920 && feature.properties.FIRE_YR < 1940){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1920 - 1939');
+
+        }
+        if(index==3){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1940 && feature.properties.FIRE_YR < 1960){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1940 - 1959');
+
+        }
+        if(index==4){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1960 && feature.properties.FIRE_YR < 1970){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1960 - 1969');
+
+        }
+        if(index==5){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1970 && feature.properties.FIRE_YR < 1980){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1970 - 1979');
+
+        }
+        if(index==6){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1980 && feature.properties.FIRE_YR < 1990){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1980 - 1989');
+
+        }
+        if(index==7){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1990 && feature.properties.FIRE_YR < 2000){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('1990 - 1999');
+
+        }
+        if(index==8){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 2000 && feature.properties.FIRE_YR < 2010){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('2000 - 2009');
+
+        }
+        if(index==9){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 2010 && feature.properties.FIRE_YR < 2020){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+            $('#sliderInfo').html('2010 - 2020');
         }
         
     });
