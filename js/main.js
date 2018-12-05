@@ -12,6 +12,7 @@ var sidebar;
 var acres = [];
 var legendControl;
 var legCount = 0;
+var json = [{}];
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -154,35 +155,40 @@ function pointFire (data, map) {
         // console.log(data.features[i].properties.TOTAL_AC);
     }
 
+   
+
+
 
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
-            fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
-            var fAcres = feature.properties.TOTAL_AC;
-            var fDate = feature.properties.FIREDATE;
-            zoom = map.getZoom();
-            acres.push(fAcres);
-            fires_100.setRadius(Math.pow(fAcres, .4));
-            zoom = map.getZoom();
-
-            fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
-
-            fires_100.on('click', function(e){
-                if (zoom < 10){
-                    map.setView(e.latlng, 9);
-                }
-                else{
-                    map.setView(e.latlng);
-                }
-            });
-
-
-
-
-            return fires_100
+            if(feature.properties.FIRE_YR > 1850 && feature.properties.FIRE_YR < 1900){
+                fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                var fAcres = feature.properties.TOTAL_AC;
+                var fDate = feature.properties.FIREDATE;
+                var pointFeature = feature.properties
+                json.push(pointFeature);
+                zoom = map.getZoom();
+                acres.push(fAcres);
+                fires_100.setRadius(Math.pow(fAcres, .4));
+                zoom = map.getZoom();
+    
+                fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+    
+                fires_100.on('click', function(e){
+                    if (zoom < 10){
+                        map.setView(e.latlng, 9);
+                    }
+                    else{
+                        map.setView(e.latlng);
+                    }
+                });
+                return fires_100
+            }
         }
     }).addTo(map);
     createLeg(map);
+    createSequenceControls(map,data);
+
     $('input[value="fire100"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
@@ -197,12 +203,11 @@ function pointFire (data, map) {
             $("#future").addClass("disabled");
         }
     });
-
-
 }
 
 function pointChange (point) {
 }
+
 
 function addState (data, map){
     var stateOptions = {
@@ -259,7 +264,6 @@ function addCounties (data, map){
     });
 
 }
-
 
 function addPreVeg (map){
 
@@ -342,6 +346,7 @@ function fireResponse (data, map){
             fResponseUnits.addTo(map);
             fResponseUnits.bringToFront();
             firePolys.bringToFront();
+            pointFire.bringToFront();
             $("#control").removeClass("disabled");
         }
         if (!responseCheck.checked){
@@ -440,6 +445,7 @@ function addFirePolys(data, map) {
         }
     });
     firePolys.addTo(map);
+    firePoint.bringToFront();
 
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
@@ -506,14 +512,14 @@ function createLeg (map) {
             $(container).append('<div id="pointLegend"</div>');
             var svg = '<svg id="attribute-legend" width="160px" height="100px" >';
             var circles = {
-                max: 60,
+                min: 20,
                 mean: 40,
-                min: 20
+                max: 60
                 
             }
 
             for (var circle in circles) {
-                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0" stroke="black" cx="42"/>';
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" stroke="black" cx="42"/>';
 
                 svg += '<text id="' + circle + '-text" x="85" y="' + (circles[circle]+11) + '"></text>';
                 
@@ -524,9 +530,9 @@ function createLeg (map) {
         }
 
     });
-    if (legCount == 0){
-        map.addControl(new legendControl());
-    }
+        
+    map.addControl(new legendControl());
+    
     legCount+=1;
 
     updateLeg(map);
@@ -567,10 +573,362 @@ function updateLeg (map) {
         });
         //Step 4: add legend text
         $('#'+key+'-text').text(Math.round(circleValues[key]));
-        console.log('#'+key+'-text');
     }
 
 }
+
+function createSequenceControls (map, data){
+    
+    $('#sequenceControls').append('<input class="range-slider" type="range">');
+
+     //set slider attributes
+    $('.range-slider').attr({
+        max: 10,
+        min: 0,
+        value: 0,
+        step: 1
+    });
+
+    //appends button to div
+    $('#sequenceControls').append('<button class="skip" id="reverse" </button>');
+    $('#sequenceControls').append('<button class="skip" id="forward" </button>');
+
+    //appends icons to buttons
+    $('#reverse').html('<i class="fa fa-caret-left"></i>');
+    $('#forward').html('<i class="fa fa-caret-right"></i>');
+    $('.skip').click(function(){
+        //get the old index value
+        var index = $('.range-slider').val();
+
+        //Step 6: increment or decrement depending on button clicked
+        if ($(this).attr('id') == 'forward'){
+            index++;
+            //Step 7: if past the last attribute, wrap around to first attribute
+            index = index > (9) ? 0 : index;
+        } else if ($(this).attr('id') == 'reverse'){
+            index--;
+            //Step 7: if past the first attribute, wrap around to last attribute
+            index = index < 0 ? (9) : index;
+
+        };
+
+        //Step 8: update slider
+        $('.range-slider').val(index);
+
+        map.eachLayer(function (layer) {
+            if(layer.feature && layer.feature.geometry){
+                if(layer.feature.geometry.type == "Point"){
+                    map.removeLayer(layer);
+                }
+            }
+        });
+
+        var geojsonMarkerOptions = {
+            fillColor: "#8856a7",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+
+        acres=[];
+        
+        if(index==0){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1850 && feature.properties.FIRE_YR < 1900){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==1){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1900 && feature.properties.FIRE_YR < 1920){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==2){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1920 && feature.properties.FIRE_YR < 1940){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==3){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1940 && feature.properties.FIRE_YR < 1960){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==4){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1960 && feature.properties.FIRE_YR < 1970){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==5){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1970 && feature.properties.FIRE_YR < 1980){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==6){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1980 && feature.properties.FIRE_YR < 1990){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==7){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 1990 && feature.properties.FIRE_YR < 2000){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==8){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 2000 && feature.properties.FIRE_YR < 2010){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        if(index==9){
+            firePoint = L.geoJson(data, {
+                pointToLayer: function(feature, latlng){
+                    if(feature.properties.FIRE_YR > 2010 && feature.properties.FIRE_YR < 2020){
+                        fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
+                        var fAcres = feature.properties.TOTAL_AC;
+                        var fDate = feature.properties.FIREDATE;
+                        var pointFeature = feature.properties
+                        zoom = map.getZoom();
+                        acres.push(fAcres);
+                        fires_100.setRadius(Math.pow(fAcres, .4));
+                        zoom = map.getZoom();
+            
+                        fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
+            
+                        fires_100.on('click', function(e){
+                            if (zoom < 10){
+                                map.setView(e.latlng, 9);
+                            }
+                            else{
+                                map.setView(e.latlng);
+                            }
+                        });
+                        return fires_100
+                    }
+                }
+            }).addTo(map);
+            updateLeg(map);
+        }
+        
+    });
+
+}
+
+
 
 function calcRadius (attribute){
 
@@ -588,6 +946,7 @@ function getData(map){
         }
     })
 }
+
 function getData2(map){
     $.ajax("data/statebounds500.geojson", {
         dataType: "json",
@@ -596,6 +955,7 @@ function getData2(map){
         }
     })
 }
+
 function getData3(map){
     $.ajax("data/WI_bnds.json", {
         dataType: "json",

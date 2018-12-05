@@ -65,5 +65,10 @@
 }
 
 .legend-control-container.leaflet-control {
+    bottom:0px;
+}
+
+#sequenceControls {
+    padding-top: 10px;
 }
 
