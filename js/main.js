@@ -11,6 +11,7 @@ var zoom;
 var sidebar;
 var acres = [];
 var legendControl;
+var legCount = 0;
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -523,8 +524,11 @@ function createLeg (map) {
         }
 
     });
+    if (legCount == 0){
+        map.addControl(new legendControl());
+    }
+    legCount+=1;
 
-    map.addControl(new legendControl());
     updateLeg(map);
     
 }
