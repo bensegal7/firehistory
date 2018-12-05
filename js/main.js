@@ -188,7 +188,7 @@ function pointFire (data, map) {
     }).addTo(map);
     createLeg(map);
     createSequenceControls(map,data);
-    $('#sliderInfo').html('1850 - 1899');
+    $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
 
 
     $('input[value="fire100"]').on('change', function() {
@@ -196,12 +196,16 @@ function pointFire (data, map) {
         if (cntyCheck.checked){
             firePoint.addTo(map);
             $(".legend-control-container.leaflet-control").show();
+            $("#sequenceControls").show();
+            $("#sliderInfo").show();
             createLeg(map);
             $("#future").removeClass("disabled");
         }
         if (!cntyCheck.checked){
             $(".legend-control-container.leaflet-control").hide();
             map.removeLayer(firePoint);
+            $("#sequenceControls").hide();
+            $("#sliderInfo").hide();
             $("#future").addClass("disabled");
         }
     });
@@ -583,7 +587,7 @@ function updateLeg (map) {
 }
 
 function createSequenceControls (map, data){
-    
+    $('#sequenceControls').append('<button class="skip" id="reverse" </button>');
     $('#sequenceControls').append('<input class="range-slider" type="range">');
 
      //set slider attributes
@@ -595,7 +599,6 @@ function createSequenceControls (map, data){
     });
 
     //appends button to div
-    $('#sequenceControls').append('<button class="skip" id="reverse" </button>');
     $('#sequenceControls').append('<button class="skip" id="forward" </button>');
 
     //appends icons to buttons
@@ -666,7 +669,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1850 - 1899');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
         }
         if(index==1){
             firePoint = L.geoJson(data, {
@@ -696,7 +699,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1900 - 1919');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1900-1919');
 
         }
         if(index==2){
@@ -727,7 +730,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1920 - 1939');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1920-1939');
 
         }
         if(index==3){
@@ -758,7 +761,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1940 - 1959');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1940-1959');
 
         }
         if(index==4){
@@ -789,7 +792,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1960 - 1969');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1960-1969');
 
         }
         if(index==5){
@@ -820,7 +823,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1970 - 1979');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1970-1979');
 
         }
         if(index==6){
@@ -851,7 +854,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1980 - 1989');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1980-1989');
 
         }
         if(index==7){
@@ -882,7 +885,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1990 - 1999');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1990-1999');
 
         }
         if(index==8){
@@ -913,7 +916,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('2000 - 2009');
+            $('#sliderInfo').html('Fires Greater than 100 acres 2000-2009');
 
         }
         if(index==9){
@@ -944,7 +947,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('2010 - 2020');
+            $('#sliderInfo').html('Fires Greater than 100 acres 2010-2020');
         }
     });
     // Step 5: input listener for slider
@@ -1016,7 +1019,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1850 - 1899');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
         }
         if(index==1){
             firePoint = L.geoJson(data, {
@@ -1046,7 +1049,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1900 - 1919');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1900-1919');
 
         }
         if(index==2){
@@ -1077,7 +1080,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1920 - 1939');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1920-1939');
 
         }
         if(index==3){
@@ -1108,7 +1111,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1940 - 1959');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1940-1959');
 
         }
         if(index==4){
@@ -1139,7 +1142,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1960 - 1969');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1960-1969');
 
         }
         if(index==5){
@@ -1170,7 +1173,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1970 - 1979');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1970-1979');
 
         }
         if(index==6){
@@ -1201,7 +1204,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1980 - 1989');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1980-1989');
 
         }
         if(index==7){
@@ -1232,7 +1235,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('1990 - 1999');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1990-1999');
 
         }
         if(index==8){
@@ -1263,7 +1266,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('2000 - 2009');
+            $('#sliderInfo').html('Fires Greater than 100 acres 2000-2009');
 
         }
         if(index==9){
@@ -1294,7 +1297,7 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('2010 - 2020');
+            $('#sliderInfo').html('Fires Greater than 100 acres 2010-2020');
         }
         
     });
