@@ -58,7 +58,6 @@
 
 .opacity_slider_control.ui-slider.ui-slider-vertical.ui-widget.ui-widget-content.ui-corner-all.leaflet-control {
     margin-right: 35px;
-    bottom: 130px;
 }
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control {
@@ -66,7 +65,5 @@
 }
 
 .legend-control-container.leaflet-control {
-    top: 330px;
 }
-
 

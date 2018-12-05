@@ -10,6 +10,8 @@ var fires_100;
 var zoom;
 var sidebar;
 var acres = [];
+var legendControl;
+var legCount = 0;
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
 
@@ -493,9 +495,9 @@ function zoomToFeat(e){
 }
 
 function createLeg (map) {
-    var legendControl = L.Control.extend({
+    legendControl = L.Control.extend({
         options: {
-            positions: 'bottomleft'
+            position: 'bottomright'
         },
 
         onAdd: function (map) {
@@ -522,7 +524,11 @@ function createLeg (map) {
         }
 
     });
-    map.addControl(new legendControl());
+    if (legCount == 0){
+        map.addControl(new legendControl());
+    }
+    legCount+=1;
+
     updateLeg(map);
     
 }
