@@ -13,8 +13,12 @@ var acres = [];
 var legendControl;
 var legCount = 0;
 var json = [{}];
+var legend;
 var opacitySlider = new L.Control.opacitySlider();
 dragElement(document.getElementById(("polyInfoSidebar")));
+$(".legend-control-container.leaflet-control").hide();
+$("#sequenceControls").hide();
+$("#sliderInfo").hide();
 
 function dragElement(elmnt) {
     var pos1 = 0,
@@ -185,8 +189,7 @@ function pointFire (data, map) {
                 return fires_100
             }
         }
-    }).addTo(map);
-    createLeg(map);
+    });
     createSequenceControls(map,data);
     $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
 
@@ -194,6 +197,7 @@ function pointFire (data, map) {
     $('input[value="fire100"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
+            map.removeLayer(firePolys);
             firePoint.addTo(map);
             $(".legend-control-container.leaflet-control").show();
             $("#sequenceControls").show();
@@ -204,6 +208,7 @@ function pointFire (data, map) {
         if (!cntyCheck.checked){
             $(".legend-control-container.leaflet-control").hide();
             map.removeLayer(firePoint);
+            firePolys.addTo(map);
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
             $("#future").addClass("disabled");
@@ -254,7 +259,18 @@ function addCounties (data, map){
         fillOpacity: 0,
         color: '#636363',
     }
-    cntyBnds = new L.geoJson(data, cntyOptions);
+    cntyBnds = new L.geoJson(data, {
+        style: function(feature){
+            return {
+                weight: 1,
+                opacity: .8,
+                fillOpacity: 0,
+                color: '#636363',
+            }
+        },
+        onEachFeature: function(feature,layer){          
+        }
+    });
 
     $('input[type=radio][value="cntyBnds"]').change(function() {
         map.removeLayer(fResponseUnits);
@@ -458,12 +474,20 @@ function addFirePolys(data, map) {
         if (cntyCheck.checked){
             firePolys.addTo(map);
             firePoint.bringToFront();
+            map.removeLayer(pointFire);
+            $(".legend-control-container.leaflet-control").hide();
+            $("#sequenceControls").hide();
+            $("#sliderInfo").hide();
             // map.addControl(opacitySlider);
             // opacitySlider.setOpacityLayer(firePolys);
         }
         if (!cntyCheck.checked){
+            $(".legend-control-container.leaflet-control").show();
+            $("#sequenceControls").show();
+            $("#sliderInfo").show();
             map.removeLayer(firePolys);
             map.removeControl(opacitySlider);
+            firePoint.addTo(map);
         }
     });
 }
@@ -471,6 +495,10 @@ function addFirePolys(data, map) {
 function panelInfo (e) {
     var layer = e.target;
     $("#polyInfoSidebar").toggle();
+    if($("#polyInfoSidebar").is(":hidden")) {
+        firePolys.addTo(map);
+    }; 
+
     sidebar.close();
     $("#closepannel").on('click', function(e) {
         $("#polyInfoSidebar").hide();
@@ -536,9 +564,10 @@ function createLeg (map) {
         }
 
     });
+    legend = new legendControl();
 
     if (legCount == 0){
-        map.addControl(new legendControl());
+        map.addControl(legend);
     }
         
     

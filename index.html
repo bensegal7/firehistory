@@ -18,6 +18,7 @@
 		<link rel="stylesheet" href="lib/Control.Opacity.css" media="screen">
 
 
+
 		<!--[if IE<9]>
 			<link rel="stylesheet" href="css/style.ie.css">
 		<![endif]-->
@@ -106,14 +107,14 @@
 					</fieldset>
 					<fieldset id="fireCheck">
 						<div>
-							<input type="checkbox" id="fire100Check" name="feature"
-									value="fire100" checked="True"/>
-							<label for="fire100Check">Fires Greater than 100 acres</label>
+							<input type="radio" id="fire100Check" name="feature"
+									value="fire100" />
+							<label for="fire100Check">Fires greater than 100 acres (Click to see how fires have changed over time)</label>
 						</div>
 						<div>
-							<input type="checkbox" id="firepolyCheck" name="feature"
+							<input type="radio" id="firepolyCheck" name="feature"
 									value="firepoly" checked="True"/>
-							<label for="firepolyCheck">Historic Fire Polygons</label>
+							<label for="firepolyCheck">Wisconsin's 10 Largest Fires (1871-Present)</label>
 						</div>
 					</fieldset>
 					<button id="dwn" style="width:100%"><i class="fa fa-download"></i>	Download</button>
@@ -207,7 +208,8 @@
 
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui-1.10.3.custom.min.js"></script>
-    	<script type="text/javascript" src="lib/leaflet.js"></script>
+		<script type="text/javascript" src="lib/leaflet.js"></script>
+		<script type="text/javascript" src="lib/leaflet.label.js"></script>
 		<script type="text/javascript" src="lib/leaflet-sidebar.min.js"></script>
 		<script type="text/javascript" src="lib/jszip.min.js"></script>
 		<script type="text/javascript" src="lib/FileSaver.js"></script>
