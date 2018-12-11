@@ -38,6 +38,7 @@
 
 		<!--put your external script links here-->
 		<div id="container">
+			<div id="ogVegLegend"></div>
 			<div id="mapid"> </div>
 			<div id="sidebar" class="leaflet-sidebar collapsed">
 				<!-- Nav tabs -->
@@ -66,7 +67,7 @@
 						When people think of wildfires, they often imagine the dry mountains of the Southwest US ablaze for weeks on end. For the citizens of Wisconsin, the millions of dollars in wildfire damage within the state over the years may come as a shock. Wisconsin has an interesting history of wildfires that dates back over a hundred years, including the deadliest fire in US history
 					</h3>
 					<fieldset id="boundSelec">
-						<legend class="checkText2"><h4>Layers</h4> </legend>
+						<legend class="checkText2"><h4>Boundary Layers</h4> </legend>
 						<div>
 							<input type="radio" id="clearBounds" name="bounds"
 								   value="clearBounds"  checked="True"  />
@@ -89,6 +90,7 @@
 						</div> -->
 					</fieldset>
 					<fieldset id="covSelect">
+							<legend class="checkText2"><h4>Land Cover Layers</h4> </legend>
 						<div>
 							<input type="radio" id="clearCov" name="cover"
 									value="clearCov"  checked="True"  />
@@ -106,6 +108,7 @@
 						</div>
 					</fieldset>
 					<fieldset id="fireCheck">
+							<legend class="checkText2"><h4>Fire Layers</h4> </legend>
 						<div>
 							<input type="radio" id="fire100Check" name="feature"
 									value="fire100" />
