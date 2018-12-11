@@ -92,6 +92,6 @@
 #ogVegLegend {
     position:absolute;
     z-index: 1000;
-    bottom: 40px;
+    bottom: 25px;
     margin-left: 55%;
 }

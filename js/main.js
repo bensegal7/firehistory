@@ -23,6 +23,7 @@ $("#ogVegLegend").hide();
 $("#ogVegLegend").append("<img src='img/vegleg.PNG'></img>");
 
 
+
 function dragElement(elmnt) {
     var pos1 = 0,
         pos2 = 0,
@@ -574,7 +575,7 @@ function updateLeg (map) {
         });
         //Step 4: add legend text
         if (key == 'min' ){
-            $('#'+key+'-text').text(Math.round(circleValues[key])+ ' Acres');
+            $('#'+key+'-text').text(Math.round(circleValues[key]));
             $('#'+key+'-text').attr({
                 x:193 + (radiusText)/2,
                 y: ((80-radius)+120)-(radius*.7),
@@ -582,7 +583,7 @@ function updateLeg (map) {
             $('#'+key+'-text').css("font-weight","Bold");
         }
         if (key =='max'){
-            $('#'+key+'-text').text(Math.round(circleValues[key])+ ' Acres');
+            $('#'+key+'-text').text(Math.round(circleValues[key]));
             $('#'+key+'-text').attr({
                 x:193 + (radiusText)/2,
                 y: ((80-radius)+120),
