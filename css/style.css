@@ -20,6 +20,11 @@
     color: #eff1f100;
 }
 
+#dwn {
+    top: 20px;
+    position: relative;
+}
+
 #polyInfoSidebar{
     height: 440px;
     display: none;
@@ -82,4 +87,11 @@
     position:relative;
     padding: 2px 7px;
     font-size: 20px;
+}
+
+#ogVegLegend {
+    position:absolute;
+    z-index: 1000;
+    bottom: 15px;
+    margin-left: 72%;
 }

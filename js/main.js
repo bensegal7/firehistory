@@ -19,6 +19,9 @@ dragElement(document.getElementById(("polyInfoSidebar")));
 $(".legend-control-container.leaflet-control").hide();
 $("#sequenceControls").hide();
 $("#sliderInfo").hide();
+$("#ogVegLegend").hide();
+$("#ogVegLegend").append("<img src='img/veg_legend.png'></img>");
+
 
 function dragElement(elmnt) {
     var pos1 = 0,
@@ -129,6 +132,7 @@ function getLandCov(map){
             opacitySlider.setOpacityLayer(currentLandCover);
             $("#oveg").addClass("disabled");
             $("#bio").removeClass("disabled");
+            $("#ogVegLegend").hide();
         }
         if (!landchecked.checked){
             map.removeLayer(currentLandCover);
@@ -248,6 +252,7 @@ function removeBoundaries (map){
         }
         if (map.hasLayer(ogVeg)){
             map.removeLayer(ogVeg);
+            $("#ogVegLegend").hide();
         }
         $("#bio").addClass("disabled");
         $("#oveg").addClass("disabled");
@@ -304,10 +309,14 @@ function addPreVeg (map){
             opacitySlider.setOpacityLayer(ogVeg);
             $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
+            $("#ogVegLegend").show();
+
         }
         if (!ogVegCheck.checked){
             map.removeLayer(ogVeg);
             $("#oveg").addClass("disabled");
+            $("#ogVegLegend").hide();
+
         }
     });
 
