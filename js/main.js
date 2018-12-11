@@ -20,7 +20,7 @@ $(".legend-control-container.leaflet-control").hide();
 $("#sequenceControls").hide();
 $("#sliderInfo").hide();
 $("#ogVegLegend").hide();
-$("#ogVegLegend").append("<img src='img/veg_legend.png'></img>");
+$("#ogVegLegend").append("<img src='img/vegleg.PNG'></img>");
 
 
 function dragElement(elmnt) {
@@ -210,7 +210,6 @@ function pointFire (data, map) {
             $("#sequenceControls").show();
             $("#sliderInfo").show();
             createLeg(map);
-            $("#future").removeClass("disabled");
         }
         if (!cntyCheck.checked){
             $(".legend-control-container.leaflet-control").hide();
@@ -218,7 +217,6 @@ function pointFire (data, map) {
             firePolys.addTo(map);
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
-            $("#future").addClass("disabled");
         }
     });
 }
@@ -244,7 +242,7 @@ function removeBoundaries (map){
         map.removeLayer(fResponseUnits);
         // map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
-        $("#control").addClass("disabled");
+        $("#suppression").addClass("disabled");
     });
     $('input[type=radio][value="clearCov"]').change(function() {
         if (map.hasLayer(currentLandCover)){
@@ -378,10 +376,11 @@ function fireResponse (data, map){
         var responseCheck = document.querySelector('input[value="fResponse"]');
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
+            $("#suppression").removeClass("disabled");
             fResponseUnits.bringToFront();
             firePolys.bringToFront();
             pointFire.bringToFront();
-            $("#control").removeClass("disabled");
+
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
@@ -393,61 +392,6 @@ function resetResponseStyle (e) {
     var layer = e.target;
     fResponseUnits.resetStyle(e.target);
 }
-
-// function fireProtect (data, map){
-//     var protectOptions = {
-//         weight: 1,
-//         opacity: .8,
-//         fillOpacity: 0,
-//         color: '#636363',
-//     }
-//     protectAreas = new L.geoJson(data, {
-//         style: function(feature){
-//             if (feature.properties.PROT_TYPE == 'EXTENSIVE'){
-//                 return{
-//                     weight: 1,
-//                     opacity: .8,
-//                     fillOpacity: .4,
-//                     color: '#636363',
-//                     fillColor: '#fdc086',
-//                 }
-//             }
-//             if (feature.properties.PROT_TYPE == 'INTENSIVE'){
-//                 return{
-//                     weight: 1,
-//                     opacity: .8,
-//                     fillOpacity: .4,
-//                     color: '#636363',
-//                     fillColor: '#beaed4',
-//                 }
-//             }
-//             if (feature.properties.PROT_TYPE == 'COOP'){
-//                 return{
-//                     weight: 1,
-//                     opacity: .8,
-//                     fillOpacity: .4,
-//                     color: '#636363',
-//                     fillColor: '#7fc97f',
-//                 }
-//             }
-//         }
-//     });
-//     $('input[value="fProtect"]').on('change', function() {
-//         map.removeLayer(cntyBnds);
-//         map.removeLayer(fResponseUnits);
-//         var protCheck = document.querySelector('input[value="fProtect"]');
-//         if (protCheck.checked){
-//             protectAreas.addTo(map);
-//             protectAreas.bringToBack();
-//             $("#control").removeClass("disabled");
-//             sidebar.open('history')
-//         }
-//         if (!protCheck.checked){
-//             map.removeLayer(protectAreas);
-//         }
-//     });
-
-// }
 
 function addFirePolys(data, map) {
     var firepolyOptions = {
@@ -688,7 +632,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate < 1899){
+                        if(fireDate > 1850 && fireDate <= 1899){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
