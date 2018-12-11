@@ -430,7 +430,7 @@ function addFirePolys(data, map) {
         if (cntyCheck.checked){
             firePolys.addTo(map);
             firePoint.bringToFront();
-            map.removeLayer(pointFire);
+            map.removeLayer(firePoint);
             $(".legend-control-container.leaflet-control").hide();
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
@@ -632,7 +632,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate <= 1899){
+                        if(fireDate > 1850 && fireDate < 1900){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -665,7 +665,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1900 && fireDate < 1919){
+                        if(fireDate >= 1900 && fireDate < 1920){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -701,7 +701,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1920 && fireDate < 1939){
+                        if(fireDate >= 1920 && fireDate < 1940){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -737,7 +737,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1940 && fireDate < 1959){
+                        if(fireDate >= 1940 && fireDate < 1960){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -771,7 +771,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1960 && fireDate < 1969){
+                        if(fireDate >= 1960 && fireDate < 1970){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -805,7 +805,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1970 && fireDate < 1979){
+                        if(fireDate >= 1970 && fireDate < 1980){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -839,7 +839,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1980 && fireDate < 1989){
+                        if(fireDate >= 1980 && fireDate < 1990){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -873,7 +873,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1990 && fireDate < 1999){
+                        if(fireDate >= 1990 && fireDate < 2000){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -907,7 +907,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 2000 && fireDate < 2009){
+                        if(fireDate >= 2000 && fireDate < 2010){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -941,7 +941,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 2010 && fireDate < 2020){
+                        if(fireDate >= 2010 && fireDate < 2020){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1016,7 +1016,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate < 1899){
+                        if(fireDate >= 1850 && fireDate < 1900){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1049,7 +1049,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1900 && fireDate < 1919){
+                        if(fireDate >= 1900 && fireDate < 1920){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1085,7 +1085,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1920 && fireDate < 1939){
+                        if(fireDate >= 1920 && fireDate < 1940){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1121,7 +1121,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1940 && fireDate < 1959){
+                        if(fireDate >= 1940 && fireDate < 1960){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1155,7 +1155,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1960 && fireDate < 1969){
+                        if(fireDate >= 1960 && fireDate < 1970){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1189,7 +1189,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1970 && fireDate < 1979){
+                        if(fireDate >= 1970 && fireDate < 1980){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1223,7 +1223,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1980 && fireDate < 1989){
+                        if(fireDate >= 1980 && fireDate < 1990){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1257,7 +1257,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1990 && fireDate < 1999){
+                        if(fireDate >= 1990 && fireDate < 2000){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1291,7 +1291,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 2000 && fireDate < 2009){
+                        if(fireDate >= 2000 && fireDate < 2010){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1325,7 +1325,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 2010 && fireDate < 2020){
+                        if(fireDate >= 2010 && fireDate < 2020){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
