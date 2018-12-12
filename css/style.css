@@ -90,13 +90,24 @@
     font-size: 20px;
 }
 
-#ogVegLegend {
+#ogVegLegend, #modernlegend {
     position:absolute;
     z-index: 1000;
     bottom: 25px;
     margin-left: 55%;
 }
-
+#fire_leg {
+    position:absolute;
+    z-index: 1000;
+    bottom: 25px;
+    margin-left: 90%;
+}
+#unit {
+    position:absolute;
+    z-index: 1000;
+    bottom: 25px;
+    margin-left: 30%;
+}
 #mapLayerPic{
     position: relative;
     margin-left: 20%;
