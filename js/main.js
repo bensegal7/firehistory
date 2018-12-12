@@ -170,7 +170,7 @@ function pointFire (data, map) {
         pointToLayer: function(feature, latlng){
 
             if(feature.properties.Date != null){
-                if(Number(feature.properties.Date.substring(0,4)) > 1850 && Number(feature.properties.Date.substring(0,4)) < 1900){
+                if(Number(feature.properties.Date.substring(0,4)) > 1850 && Number(feature.properties.Date.substring(0,4)) < 1910){
                     fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                     var fAcres = feature.properties.ACRES;
                     var fDate = feature.properties.Date;
@@ -198,7 +198,7 @@ function pointFire (data, map) {
         }
     });
     createSequenceControls(map,data);
-    $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
+    $('#sliderInfo').html('Fires Greater than 100 acres 1874-1909');
 
 
     $('input[value="fire100"]').on('change', function() {
@@ -275,6 +275,18 @@ function addCounties (data, map){
             }
         },
         onEachFeature: function(feature,layer){
+            layer.on({
+                mouseover:highlightCounty,
+                mouseout:resetCounty,
+            })
+            var name = feature.properties.COUNTY_NAM;
+            layer.bindPopup(name + " County");
+            layer.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            layer.on('mouseout', function (e) {
+                this.closePopup();
+            });
         }
     });
 
@@ -284,13 +296,32 @@ function addCounties (data, map){
         var cntyCheck = document.querySelector('input[value="cntyBnds"]');
         if (cntyCheck.checked){
             cntyBnds.addTo(map);
-            cntyBnds.bringToBack();
+            if (map.hasLayer(firePoint)){
+                firePoint.bringToFront();
+            }
+            if (map.hasLayer(firePolys)){
+                firePolys.bringToFront();
+            }
+            // cntyBnds.bringToBack();
         }
         if (!cntyCheck.checked){
             map.removeLayer(cntyBnds);
         }
     });
 
+}
+function highlightCounty (e) {
+    var layer = e.target;
+    layer.setStyle({
+        weight: 1.5,
+        opacity: .8,
+        fillOpacity: .8,
+        color: '#525252',
+        fillColor: '#737373'
+    })
+}
+function resetCounty (e) {
+    cntyBnds.resetStyle(e.target);
 }
 
 function addPreVeg (map){
@@ -582,7 +613,7 @@ function createSequenceControls (map, data){
 
      //set slider attributes
     $('.range-slider').attr({
-        max: 9,
+        max: 8,
         min: 0,
         value: 0,
         step: 1
@@ -602,11 +633,11 @@ function createSequenceControls (map, data){
         if ($(this).attr('id') == 'forward'){
             index++;
             //Step 7: if past the last attribute, wrap around to first attribute
-            index = index > (9) ? 0 : index;
+            index = index > (8) ? 0 : index;
         } else if ($(this).attr('id') == 'reverse'){
             index--;
             //Step 7: if past the first attribute, wrap around to last attribute
-            index = index < 0 ? (9) : index;
+            index = index < 0 ? (8) : index;
 
         };
 
@@ -637,7 +668,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate <= 1899){
+                        if(fireDate > 1850 && fireDate < 1910){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -663,14 +694,14 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1909');
         }
         if(index==1){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1900 && fireDate < 1919){
+                        if(fireDate >= 1915 && fireDate < 1940){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -698,51 +729,14 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1900-1919');
-
+            $('#sliderInfo').html('Fires Greater than 100 acres 1915-1939');
         }
         if(index==2){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1920 && fireDate < 1939){
-                            fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
-                            var fAcres = feature.properties.ACRES;
-                            var fDate = feature.properties.Date;
-                            var pointFeature = feature.properties
-                            zoom = map.getZoom();
-                            acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
-                            zoom = map.getZoom();
-
-                            fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
-
-                            fires_100.on('click', function(e){
-                                if (zoom < 10){
-                                    map.setView(e.latlng, 9);
-                                }
-                                else{
-                                    map.setView(e.latlng);
-                                }
-                            });
-                            return fires_100
-                        }
-                    }
-
-
-                }
-            }).addTo(map);
-            updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1920-1939');
-
-        }
-        if(index==3){
-            firePoint = L.geoJson(data, {
-                pointToLayer: function(feature, latlng){
-                    if (feature.properties.Date != null) {
-                        var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1940 && fireDate < 1959){
+                        if(fireDate >= 1940 && fireDate < 1960){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -771,7 +765,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1940-1959');
 
         }
-        if(index==4){
+        if(index==3){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -805,7 +799,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1960-1969');
 
         }
-        if(index==5){
+        if(index==4){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -839,7 +833,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1970-1979');
 
         }
-        if(index==6){
+        if(index==5){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -873,7 +867,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1980-1989');
 
         }
-        if(index==7){
+        if(index==6){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -907,7 +901,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1990-1999');
 
         }
-        if(index==8){
+        if(index==7){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -941,7 +935,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 2000-2009');
 
         }
-        if(index==9){
+        if(index==8){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1021,7 +1015,7 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate < 1899){
+                        if(fireDate > 1850 && fireDate < 1910){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1047,14 +1041,14 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1899');
+            $('#sliderInfo').html('Fires Greater than 100 acres 1850-1909');
         }
         if(index==1){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1900 && fireDate < 1919){
+                        if(fireDate >= 1915 && fireDate < 1940){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1082,51 +1076,14 @@ function createSequenceControls (map, data){
                 }
             }).addTo(map);
             updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1900-1919');
-
+            $('#sliderInfo').html('Fires Greater than 100 acres 1915-1939');
         }
         if(index==2){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1920 && fireDate < 1939){
-                            fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
-                            var fAcres = feature.properties.ACRES;
-                            var fDate = feature.properties.Date;
-                            var pointFeature = feature.properties
-                            zoom = map.getZoom();
-                            acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
-                            zoom = map.getZoom();
-
-                            fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
-
-                            fires_100.on('click', function(e){
-                                if (zoom < 10){
-                                    map.setView(e.latlng, 9);
-                                }
-                                else{
-                                    map.setView(e.latlng);
-                                }
-                            });
-                            return fires_100
-                        }
-                    }
-
-
-                }
-            }).addTo(map);
-            updateLeg(map);
-            $('#sliderInfo').html('Fires Greater than 100 acres 1920-1939');
-
-        }
-        if(index==3){
-            firePoint = L.geoJson(data, {
-                pointToLayer: function(feature, latlng){
-                    if (feature.properties.Date != null) {
-                        var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1940 && fireDate < 1959){
+                        if(fireDate >= 1940 && fireDate < 1960){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
@@ -1155,7 +1112,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1940-1959');
 
         }
-        if(index==4){
+        if(index==3){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1189,7 +1146,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1960-1969');
 
         }
-        if(index==5){
+        if(index==4){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1223,7 +1180,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1970-1979');
 
         }
-        if(index==6){
+        if(index==5){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1257,7 +1214,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1980-1989');
 
         }
-        if(index==7){
+        if(index==6){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1291,7 +1248,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 1990-1999');
 
         }
-        if(index==8){
+        if(index==7){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1325,7 +1282,7 @@ function createSequenceControls (map, data){
             $('#sliderInfo').html('Fires Greater than 100 acres 2000-2009');
 
         }
-        if(index==9){
+        if(index==8){
             firePoint = L.geoJson(data, {
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
@@ -1392,7 +1349,7 @@ function getData2(map){
 }
 
 function getData3(map){
-    $.ajax("data/WI_bnds.json", {
+    $.ajax("data/county_bounds.geojson", {
         dataType: "json",
         success: function(response){
             addCounties(response, map);
