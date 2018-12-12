@@ -482,11 +482,35 @@ function addFirePolys(data, map) {
 
 function panelInfo (e) {
     var layer = e.target;
-    $("#polyInfoSidebar").html (
-            '<div class="sidebar-container">' + '<span style="font-size: 15px;font-weight: bold;">' + layer.feature.properties.NAME
-             + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
-             + '<p class="text">' + layer.feature.properties.blurb1 + '</p><img src="img/' + layer.feature.properties.pic1 + '" style="width: 100%"></div>'
-    )
+    var name = layer.feature.properties.NAME
+    var p1 = layer.feature.properties.blurb1
+    var p2 = layer.feature.properties.blurb2
+    var img1 = layer.feature.properties.pic1
+    var img2 = layer.feature.properties.pic2
+    if (p2 != "" && img2 != "") {
+        $("#polyInfoSidebar").html (
+                '<div class="sidebar-container"><span style="font-size: 15px;font-weight: bold;">' + name
+                 + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
+                 + '<p class="text">' + p1 + '</p><img src="img/' + img1 + '" style="width: 100%">'
+                 + '<p class="text">' + p2 + '</p><img src="img/' + img2 + '" style="width: 100%"></div>'
+        )
+    }
+    if (img1 == "" && img2 == "") {
+        $("#polyInfoSidebar").html (
+                '<div class="sidebar-container"><span style="font-size: 15px;font-weight: bold;">' + name
+                 + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
+                 + '<p class="text">' + p1 + '</p>'
+                 + '<p class="text">' + p2 + '</p></div>'
+        )
+    }
+    if (img1 != "" && img2 == "") {
+        $("#polyInfoSidebar").html (
+                '<div class="sidebar-container"><span style="font-size: 15px;font-weight: bold;">' + name
+                 + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
+                 + '<p class="text">' + p1 + '</p><img src="img/' + img1 + '" style="width: 100%">'
+                 + '<p class="text">' + p2 + '</p></div>'
+        )
+    }
     $("#polyInfoSidebar").toggle();
     if($("#polyInfoSidebar").is(":hidden")) {
         firePolys.addTo(map);
@@ -622,7 +646,7 @@ function updateLeg (map) {
             })
             $('#'+key+'-text').css("font-weight","Bold");
         }
-       
+
     }
     $("#title-text").css("font-weight","Bold");
     $("#title-text").attr({

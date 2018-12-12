@@ -33,7 +33,7 @@
     right: 60px;
     left:auto;
     box-shadow: 0px 1px 10px 1px #757373;
-    background-color: #fff;
+    background-color: #ccc;
     position: absolute;
     overflow: auto;
     z-index: 10000000;
