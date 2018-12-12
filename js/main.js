@@ -19,9 +19,14 @@ dragElement(document.getElementById(("polyInfoSidebar")));
 $(".legend-control-container.leaflet-control").hide();
 $("#sequenceControls").hide();
 $("#sliderInfo").hide();
+$("#unit").hide();
+$("#fire_leg").hide();
+$("#modernlegend").hide();
 $("#ogVegLegend").hide();
-$("#ogVegLegend").append("<img src='img/vegleg.PNG'></img>");
-
+$("#ogVegLegend").append("<img src='img/veg_legend.jpg'></img>");
+$("#modernlegend").append("<img src='img/cover_legend.jpg'></img>");
+$("#fire_leg").append("<img src='img/fire_leg.jpg'></img>");
+$("#unit").append("<img src='img/response_legend.jpg'></img>");
 
 function dragElement(elmnt) {
     var pos1 = 0,
@@ -128,6 +133,7 @@ function getLandCov(map){
             map.removeLayer(ogVeg);
             currentLandCover = L.tileLayer('tiles/modernland_cover/{z}/{x}/{y}.png', {
             }).addTo(map).bringToFront();
+            $("#modernlegend").show();
             map.addControl(opacitySlider);
             opacitySlider.setOpacityLayer(currentLandCover);
             $("#oveg").addClass("disabled");
@@ -205,6 +211,7 @@ function pointFire (data, map) {
         var cntyCheck = document.querySelector('input[value="fire100"]');
         if (cntyCheck.checked){
             map.removeLayer(firePolys);
+            $("#fire_leg").hide();
             firePoint.addTo(map);
             $(".legend-control-container.leaflet-control").show();
             $("#sequenceControls").show();
@@ -215,6 +222,7 @@ function pointFire (data, map) {
             $(".legend-control-container.leaflet-control").hide();
             map.removeLayer(firePoint);
             firePolys.addTo(map);
+            $("#fire_leg").show();
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
         }
@@ -240,6 +248,7 @@ function addState (data, map){
 function removeBoundaries (map){
     $('input[type=radio][value="clearBounds"]').change(function() {
         map.removeLayer(fResponseUnits);
+        $("#unit").hide();
         // map.removeLayer(protectAreas);
         map.removeLayer(cntyBnds);
         $("#suppression").addClass("disabled");
@@ -247,6 +256,7 @@ function removeBoundaries (map){
     $('input[type=radio][value="clearCov"]').change(function() {
         if (map.hasLayer(currentLandCover)){
             map.removeLayer(currentLandCover);
+            $("#modernlegend").hide();
         }
         if (map.hasLayer(ogVeg)){
             map.removeLayer(ogVeg);
@@ -292,6 +302,7 @@ function addCounties (data, map){
 
     $('input[type=radio][value="cntyBnds"]').change(function() {
         map.removeLayer(fResponseUnits);
+        $("#unit").hide();
         // map.removeLayer(protectAreas);
         var cntyCheck = document.querySelector('input[value="cntyBnds"]');
         if (cntyCheck.checked){
@@ -338,6 +349,7 @@ function addPreVeg (map){
             opacitySlider.setOpacityLayer(ogVeg);
             $("#bio").addClass("disabled")
             $("#oveg").removeClass("disabled");
+            $("#modernlegend").hide();
             $("#ogVegLegend").show();
 
         }
@@ -407,6 +419,7 @@ function fireResponse (data, map){
         var responseCheck = document.querySelector('input[value="fResponse"]');
         if (responseCheck.checked){
             fResponseUnits.addTo(map);
+            $("#unit").show();
             $("#suppression").removeClass("disabled");
             fResponseUnits.bringToFront();
             firePolys.bringToFront();
@@ -415,6 +428,7 @@ function fireResponse (data, map){
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
+            $("#unit").hide();
         }
     });
 }
@@ -454,11 +468,12 @@ function addFirePolys(data, map) {
         }
     });
     firePolys.addTo(map);
-
+    $("#fire_leg").show();
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
         if (cntyCheck.checked){
             firePolys.addTo(map);
+            $("#fire_leg").show();
             firePoint.bringToFront();
             if(map.hasLayer(firePoint)){
                 map.removeLayer(firePoint);
@@ -474,6 +489,7 @@ function addFirePolys(data, map) {
             $("#sequenceControls").show();
             $("#sliderInfo").show();
             map.removeLayer(firePolys);
+            $("#fire_leg").hide();
             map.removeControl(opacitySlider);
             firePoint.addTo(map);
         }
