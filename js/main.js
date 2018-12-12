@@ -482,9 +482,10 @@ function addFirePolys(data, map) {
 function panelInfo (e) {
     var layer = e.target;
     $("#polyInfoSidebar").html (
-            '<div class="sidebar-container">' + '<span style="font-size: 15px;font-weight: bold;">' + layer.feature.properties.NAME
+            '<div class="sidebar-container"><span style="font-size: 15px;font-weight: bold;">' + layer.feature.properties.NAME
              + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
-             + '<p class="text">' + layer.feature.properties.blurb1 + '</p><img src="img/' + layer.feature.properties.pic1 + '" style="width: 100%"></div>'
+             + '<p class="text">' + layer.feature.properties.blurb1 + '</p><img src="img/' + layer.feature.properties.pic1 + '" style="width: 100%">'
+             + '<p class="text">' + layer.feature.properties.blurb2 + '</p><img src="img/' +layer.feature.properties.pic2 + '" style="width: 100%"></div>'
     )
     $("#polyInfoSidebar").toggle();
     if($("#polyInfoSidebar").is(":hidden")) {
