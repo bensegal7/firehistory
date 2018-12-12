@@ -95,3 +95,13 @@
     bottom: 25px;
     margin-left: 55%;
 }
+
+#mapLayerPic{
+    position: relative;
+    margin-left: 20%;
+}
+
+.helpPics {
+    position: relative;
+    margin-left: 45%;
+}
