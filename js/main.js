@@ -23,7 +23,6 @@ $("#ogVegLegend").hide();
 $("#ogVegLegend").append("<img src='img/vegleg.PNG'></img>");
 
 
-
 function dragElement(elmnt) {
     var pos1 = 0,
         pos2 = 0,
@@ -169,7 +168,7 @@ function pointFire (data, map) {
 
     firePoint = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
-            console.log(feature.properties);
+
             if(feature.properties.Date != null){
                 if(Number(feature.properties.Date.substring(0,4)) > 1850 && Number(feature.properties.Date.substring(0,4)) < 1900){
                     fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
@@ -179,7 +178,7 @@ function pointFire (data, map) {
                     json.push(pointFeature);
                     zoom = map.getZoom();
                     acres.push(fAcres);
-                    fires_100.setRadius((Math.pow(fAcres, .4)/2));
+                    fires_100.setRadius(Math.pow(fAcres, .4));
                     zoom = map.getZoom();
 
                     fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -379,12 +378,8 @@ function fireResponse (data, map){
             fResponseUnits.addTo(map);
             $("#suppression").removeClass("disabled");
             fResponseUnits.bringToFront();
-            if (map.hasLayer(firePolys)){
-                firePolys.bringToFront();
-            }
-            if (map.hasLayer(firePoint)){
-                firePoint.bringToFront();
-            }
+            firePolys.bringToFront();
+            pointFire.bringToFront();
 
         }
         if (!responseCheck.checked){
@@ -435,7 +430,7 @@ function addFirePolys(data, map) {
         if (cntyCheck.checked){
             firePolys.addTo(map);
             firePoint.bringToFront();
-            map.removeLayer(firePoint);
+            map.removeLayer(pointFire);
             $(".legend-control-container.leaflet-control").hide();
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
@@ -455,11 +450,16 @@ function addFirePolys(data, map) {
 
 function panelInfo (e) {
     var layer = e.target;
+    $("#polyInfoSidebar").html (
+            '<div class="sidebar-container">' + '<span style="font-size: 15px;font-weight: bold;">' + layer.feature.properties.NAME
+             + '</span><a href="#" id="closepannel"><i class="fa fa-times closep" style=""></i></a>'
+             + '<p class="text">' + layer.feature.properties.blurb1 + '</p><img src="img/' + layer.feature.properties.pic1 + '" style="width: 100%"></div>'
+    )
     $("#polyInfoSidebar").toggle();
     if($("#polyInfoSidebar").is(":hidden")) {
         firePolys.addTo(map);
     };
-
+    console.log(layer);
     sidebar.close();
     $("#closepannel").on('click', function(e) {
         $("#polyInfoSidebar").hide();
@@ -490,6 +490,7 @@ function zoomToFeat(e){
     map.removeLayer(firePolys);
     e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
+    firePoint.bringToFront();
     $("#plyInfo").show();
 
 }
@@ -504,7 +505,7 @@ function createLeg (map) {
             var container = L.DomUtil.create('div', 'legend-control-container');
 
             $(container).append('<div id="pointLegend"</div>');
-            var svg = '<svg id="attribute-legend" width="320px" height="200" >';
+            var svg = '<svg id="attribute-legend" width="160px" height="100px" >';
             var circles = {
                 min: 20,
                 mean: 40,
@@ -513,14 +514,11 @@ function createLeg (map) {
             }
 
             for (var circle in circles) {
-                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" stroke="black" cx="150"/>';
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" stroke="black" cx="42"/>';
 
-                if (circle == 'min' || circle =='max'){
-                    svg += '<text id="' + circle + '-text" x="193" y="' + (circles[circle]+11) + '"></text>';
-                }
+                svg += '<text id="' + circle + '-text" x="85" y="' + (circles[circle]+11) + '"></text>';
 
             }
-            svg += '<text id="title-text" x="193" y="' + (circles[circle]+11) + '">Fire Size (Acres)</text>';
             svg += "</svg>";
             $(container).append(svg);
             return container;
@@ -541,8 +539,8 @@ function createLeg (map) {
 }
 
 function updateLeg (map) {
-    // var content = "<b>Fire Size (Acres)</b>";
-    // $("#pointLegend").html(content);
+    var content = "<b>Fire Size (Acres)</b>";
+    $("#pointLegend").html(content);
     var min = 10000,
         max = -1000;
 
@@ -568,35 +566,13 @@ function updateLeg (map) {
 
     for (var key in circleValues){
         var radius = calcRadius(circleValues[key]);
-        var radiusText = calcRadius(circleValues['min']);
         $('#'+key).attr({
-            cy: (80-radius)+120,
+            cy: 80 - radius ,
             r: radius
         });
         //Step 4: add legend text
-        if (key == 'min' ){
-            $('#'+key+'-text').text(Math.round(circleValues[key]));
-            $('#'+key+'-text').attr({
-                x:193 + (radiusText)/2,
-                y: ((80-radius)+120)-(radius*.7),
-            })
-            $('#'+key+'-text').css("font-weight","Bold");
-        }
-        if (key =='max'){
-            $('#'+key+'-text').text(Math.round(circleValues[key]));
-            $('#'+key+'-text').attr({
-                x:193 + (radiusText)/2,
-                y: ((80-radius)+120),
-            })
-            $('#'+key+'-text').css("font-weight","Bold");
-        }
-       
+        $('#'+key+'-text').text(Math.round(circleValues[key]));
     }
-    $("#title-text").css("font-weight","Bold");
-    $("#title-text").attr({
-        x: 95,
-        y: ((80-radius)+110)-(radiusText),
-    })
 
 }
 
@@ -661,14 +637,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate > 1850 && fireDate < 1900){
+                        if(fireDate > 1850 && fireDate <= 1899){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -694,14 +670,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1900 && fireDate < 1920){
+                        if(fireDate > 1900 && fireDate < 1919){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -730,14 +706,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1920 && fireDate < 1940){
+                        if(fireDate > 1920 && fireDate < 1939){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -766,14 +742,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1940 && fireDate < 1960){
+                        if(fireDate > 1940 && fireDate < 1959){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -800,14 +776,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1960 && fireDate < 1970){
+                        if(fireDate > 1960 && fireDate < 1969){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -834,14 +810,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1970 && fireDate < 1980){
+                        if(fireDate > 1970 && fireDate < 1979){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -868,14 +844,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1980 && fireDate < 1990){
+                        if(fireDate > 1980 && fireDate < 1989){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -902,14 +878,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1990 && fireDate < 2000){
+                        if(fireDate > 1990 && fireDate < 1999){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -936,14 +912,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 2000 && fireDate < 2010){
+                        if(fireDate > 2000 && fireDate < 2009){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -970,14 +946,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 2010 && fireDate < 2020){
+                        if(fireDate > 2010 && fireDate < 2020){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1045,14 +1021,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1850 && fireDate < 1900){
+                        if(fireDate > 1850 && fireDate < 1899){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1078,14 +1054,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1900 && fireDate < 1920){
+                        if(fireDate > 1900 && fireDate < 1919){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1114,14 +1090,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1920 && fireDate < 1940){
+                        if(fireDate > 1920 && fireDate < 1939){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1150,14 +1126,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1940 && fireDate < 1960){
+                        if(fireDate > 1940 && fireDate < 1959){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1184,14 +1160,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1960 && fireDate < 1970){
+                        if(fireDate > 1960 && fireDate < 1969){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1218,14 +1194,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1970 && fireDate < 1980){
+                        if(fireDate > 1970 && fireDate < 1979){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1252,14 +1228,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1980 && fireDate < 1990){
+                        if(fireDate > 1980 && fireDate < 1989){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1286,14 +1262,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 1990 && fireDate < 2000){
+                        if(fireDate > 1990 && fireDate < 1999){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1320,14 +1296,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 2000 && fireDate < 2010){
+                        if(fireDate > 2000 && fireDate < 2009){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1354,14 +1330,14 @@ function createSequenceControls (map, data){
                 pointToLayer: function(feature, latlng){
                     if (feature.properties.Date != null) {
                         var fireDate = Number(feature.properties.Date.substring(0,4));
-                        if(fireDate >= 2010 && fireDate < 2020){
+                        if(fireDate > 2010 && fireDate < 2020){
                             fires_100 = L.circleMarker(latlng, geojsonMarkerOptions)
                             var fAcres = feature.properties.ACRES;
                             var fDate = feature.properties.Date;
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
+                            fires_100.setRadius(Math.pow(fAcres, .4));
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1391,7 +1367,7 @@ function createSequenceControls (map, data){
 
 function calcRadius (attribute){
 
-    var radius = (Math.pow(attribute, .4)/2);
+    var radius = Math.pow(attribute, .4);
     return radius;
 
 
@@ -1448,7 +1424,7 @@ function getData5(map){
 //     })
 // }
 function getData7(map){
-    $.ajax("data/select_fire_polys.geojson", {
+    $.ajax("data/fires_with_info.geojson", {
         dataType: "json",
         success: function(response){
             addFirePolys(response, map);
