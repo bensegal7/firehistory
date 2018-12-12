@@ -102,6 +102,8 @@ function createMap(){
         position: 'topright'
     });
     map.addControl(resetZoom);
+    L.control.scale().addTo(map);
+
 
 
 

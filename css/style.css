@@ -105,3 +105,6 @@
     position: relative;
     margin-left: 45%;
 }
+.leaflet-control-scale.leaflet-control {
+    margin-bottom: 10px;
+}
