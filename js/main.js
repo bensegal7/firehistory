@@ -178,7 +178,7 @@ function pointFire (data, map) {
                     json.push(pointFeature);
                     zoom = map.getZoom();
                     acres.push(fAcres);
-                    fires_100.setRadius(Math.pow(fAcres, .4));
+                    fires_100.setRadius(Math.pow(fAcres, .4)/2);
                     zoom = map.getZoom();
 
                     fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -454,14 +454,15 @@ function addFirePolys(data, map) {
         }
     });
     firePolys.addTo(map);
-    firePoint.bringToFront();
 
     $('input[value="firepoly"]').on('change', function() {
         var cntyCheck = document.querySelector('input[value="firepoly"]');
         if (cntyCheck.checked){
             firePolys.addTo(map);
             firePoint.bringToFront();
-            map.removeLayer(pointFire);
+            if(map.hasLayer(firePoint)){
+                map.removeLayer(firePoint);
+            }
             $(".legend-control-container.leaflet-control").hide();
             $("#sequenceControls").hide();
             $("#sliderInfo").hide();
@@ -537,7 +538,7 @@ function createLeg (map) {
             var container = L.DomUtil.create('div', 'legend-control-container');
 
             $(container).append('<div id="pointLegend"</div>');
-            var svg = '<svg id="attribute-legend" width="160px" height="100px" >';
+            var svg = '<svg id="attribute-legend" width="320px" height="200" >';
             var circles = {
                 min: 20,
                 mean: 40,
@@ -546,11 +547,14 @@ function createLeg (map) {
             }
 
             for (var circle in circles) {
-                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" stroke="black" cx="42"/>';
+                svg += '<circle class="legend-circle" id="' + circle + '" fill="#8856a7" fill-opacity="0.8" stroke="black" cx="150"/>';
 
-                svg += '<text id="' + circle + '-text" x="85" y="' + (circles[circle]+11) + '"></text>';
+                if (circle == 'min' || circle =='max'){
+                    svg += '<text id="' + circle + '-text" x="193" y="' + (circles[circle]+11) + '"></text>';
+                }
 
             }
+            svg += '<text id="title-text" x="193" y="' + (circles[circle]+11) + '">Fire Size (Acres)</text>';
             svg += "</svg>";
             $(container).append(svg);
             return container;
@@ -571,8 +575,8 @@ function createLeg (map) {
 }
 
 function updateLeg (map) {
-    var content = "<b>Fire Size (Acres)</b>";
-    $("#pointLegend").html(content);
+    // var content = "<b>Fire Size (Acres)</b>";
+    // $("#pointLegend").html(content);
     var min = 10000,
         max = -1000;
 
@@ -598,13 +602,35 @@ function updateLeg (map) {
 
     for (var key in circleValues){
         var radius = calcRadius(circleValues[key]);
+        var radiusText = calcRadius(circleValues['min']);
         $('#'+key).attr({
-            cy: 80 - radius ,
+            cy: (80-radius)+120,
             r: radius
         });
         //Step 4: add legend text
-        $('#'+key+'-text').text(Math.round(circleValues[key]));
+        if (key == 'min' ){
+            $('#'+key+'-text').text(Math.round(circleValues[key]));
+            $('#'+key+'-text').attr({
+                x:193 + (radiusText)/2,
+                y: ((80-radius)+120)-(radius*.7),
+            })
+            $('#'+key+'-text').css("font-weight","Bold");
+        }
+        if (key =='max'){
+            $('#'+key+'-text').text(Math.round(circleValues[key]));
+            $('#'+key+'-text').attr({
+                x:193 + (radiusText)/2,
+                y: ((80-radius)+120),
+            })
+            $('#'+key+'-text').css("font-weight","Bold");
+        }
+       
     }
+    $("#title-text").css("font-weight","Bold");
+    $("#title-text").attr({
+        x: 95,
+        y: ((80-radius)+110)-(radiusText),
+    })
 
 }
 
@@ -676,7 +702,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -709,7 +735,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -744,7 +770,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -778,7 +804,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -812,7 +838,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -846,7 +872,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -880,7 +906,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -914,7 +940,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -948,7 +974,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1023,7 +1049,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1056,7 +1082,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1091,7 +1117,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1125,7 +1151,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1159,7 +1185,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1193,7 +1219,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1227,7 +1253,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1261,7 +1287,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1295,7 +1321,7 @@ function createSequenceControls (map, data){
                             var pointFeature = feature.properties
                             zoom = map.getZoom();
                             acres.push(fAcres);
-                            fires_100.setRadius(Math.pow(fAcres, .4));
+                            fires_100.setRadius(Math.pow(fAcres, .4)/2);
                             zoom = map.getZoom();
 
                             fires_100.bindPopup("<b>Date of fire: </b>" + fDate + "<br><b>Total area burned: </b>" + fAcres + " acres");
@@ -1325,7 +1351,7 @@ function createSequenceControls (map, data){
 
 function calcRadius (attribute){
 
-    var radius = Math.pow(attribute, .4);
+    var radius = Math.pow(attribute, .4)/2;
     return radius;
 
 
