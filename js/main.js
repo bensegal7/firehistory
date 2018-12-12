@@ -107,6 +107,8 @@ function createMap(){
         position: 'topright'
     });
     map.addControl(resetZoom);
+    L.control.scale().addTo(map);
+
 
 
 
@@ -562,7 +564,6 @@ function zoomToFeat(e){
     map.removeLayer(firePolys);
     e.target.addTo(map);
     map.fitBounds(e.target.getBounds());
-    firePoint.bringToFront();
     $("#plyInfo").show();
 
 }
@@ -1477,7 +1478,7 @@ function getData7(map){
 // }
 $("#dwn").on('click', function(e){
     map.fire('modal', {
-      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIFF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres 1981-Present (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Historic Fire Polygons (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
+      content: '<div id="download" class="modal"><div class="modal-header"><h1>Download Layers</h1><fieldset id="fireCheck"><legend class="checkText2"><h4>Select layers for download: </h4> </legend><div><input type="checkbox" id="wibndsCheck" class="downCheck" name="feature"value="wiBnds" /><label for="wibndsCheck">Wisconsin County Boundaries (GeoJSON)</label></div><div><input type="checkbox" id="responseDownload" class="downCheck" name="feature"value="response" /><label for="responseDownload">Fire Response Units (GeoJSON)</label></div><div><input type="checkbox" id="vegDownload" class="downCheck" name="feature"value="veg" /><label for="vegDownload">Wisconsin Pre-settlement Vegetation (GeoJSON)</label></div><div><input type="checkbox" id="coverDownload" class="downCheck" name="feature"value="cover" /><label for="coverDownload">Current Wisconsin Land Cover (TIF)</label></div><div><input type="checkbox" id="pointDownload" class="downCheck" name="feature"value="pointDownload" /><label for="pointDownload">Fires Greater than 100 acres (GeoJSON)</label></div><div><input type="checkbox" id="polyDownload" class="downCheck" name="feature"value="poly" /><label for="polyDownload">Famous Fires (GeoJSON)</label></div></fieldset><button id="dwnload">Download</button></div></div>'
     });
     $("#dwnload").on('click',function(e){
         $("#allCheck").click(function(){
@@ -1492,7 +1493,7 @@ $("#dwn").on('click', function(e){
             //     }
             //     zip.file('WI_bnds.json', data);
             // })
-            saveAs('data/WI_bnds.json', 'WI_bnds.json');
+            saveAs('data/county_bounds.geojson', 'WI_bnds.json');
         }
         // setTimeout(function(){
         //     zip.generateAsync({type:"blob"}).then(function(content){
@@ -1505,25 +1506,21 @@ $("#dwn").on('click', function(e){
         if(response.checked){
             saveAs('data/fire_response.geojson', 'fire_response.geojson');
         }
-        var protect = document.querySelector('input[value="protect"]');
-        if(protect.checked){
-            saveAs('data/protection_areas.geojson', 'protection_areas.geojson');
-        }
         var veg = document.querySelector('input[value="veg"]');
         if(veg.checked){
             saveAs('data/og_veg_poly.geojson', 'presettlement_veg.geojson');
         }
-        // var cover = document.querySelector('input[value="cover"]');
-        // if(cover.checked){
-        //     saveAs('data/cover.tiff', 'current_land_cover.tiff');
-        // }
-        var points = document.querySelector('input[value="point"]');
+        var cover = document.querySelector('input[value="cover"]');
+        if(cover.checked){
+            saveAs('data/wiscland2_level1.tif', 'current_land_cover.tif');
+        }
+        var points = document.querySelector('input[value="pointDownload"]');
         if(points.checked){
             saveAs('data/fires_final.geojson', 'fires_100_acres.geojson');
         }
         var poly = document.querySelector('input[value="poly"]');
         if(poly.checked){
-            saveAs('data/historic_fires_polys.geojson', 'historic_fires_polys.geojson');
+            saveAs('data/fires_with_info.geojson', 'famous_fires.geojson');
         }
     });
   });
