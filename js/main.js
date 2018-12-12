@@ -411,9 +411,12 @@ function fireResponse (data, map){
             fResponseUnits.addTo(map);
             $("#suppression").removeClass("disabled");
             fResponseUnits.bringToFront();
-            firePolys.bringToFront();
-            pointFire.bringToFront();
-
+            if (map.hasLayer(firePolys)){
+                firePolys.bringToFront();
+            }
+            if (map.hasLayer(firePoint)){
+                firePoint.bringToFront();
+            }
         }
         if (!responseCheck.checked){
             map.removeLayer(fResponseUnits);
