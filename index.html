@@ -38,11 +38,14 @@
 
 		<!--put your external script links here-->
 		<div id="container">
+			<!-- Legends -->
 			<div id="ogVegLegend"></div>
 			<div id="modernlegend"></div>
 			<div id="fire_leg"></div>
 			<div id="unit"></div>
 			<div id="mapid"> </div>
+
+			<!-- Sidebar -->
 			<div id="sidebar" class="leaflet-sidebar collapsed">
 				<!-- Nav tabs -->
 				<div class="leaflet-sidebar-tabs">
@@ -60,6 +63,8 @@
 
 				<!-- Tab panes -->
 				<div class="leaflet-sidebar-content">
+
+				<!-- Home pane -->
 				<div class="leaflet-sidebar-pane" id="home">
 					<h1 class="leaflet-sidebar-header">
 							Wisconsin on Fire
@@ -68,6 +73,8 @@
 					<h3>
 						When people think of wildfires, they often imagine the dry mountains of the Southwest US ablaze for weeks on end. For the citizens of Wisconsin, the millions of dollars in wildfire damage within the state over the years may come as a shock. Wisconsin has an interesting history of wildfires that dates back over a hundred years, including the deadliest fire in US history
 					</h3>
+
+					<!-- Boundary layer group -->
 					<fieldset id="boundSelec">
 						<legend class="checkText2"><h4>Boundary Layers</h4> </legend>
 						<div>
@@ -85,12 +92,9 @@
 								   value="fResponse" />
 							<label for="responseCheck">Fire Response Units</label>
 						</div>
-						<!-- <div>
-							<input type="radio" id="protectCheck" name="bounds"
-								   value="fProtect" />
-							<label for="protectCheck">Fire Protection Areas</label>
-						</div> -->
 					</fieldset>
+
+					<!-- Land Cover layer group -->
 					<fieldset id="covSelect">
 							<legend class="checkText2"><h4>Land Cover Layers</h4> </legend>
 						<div>
@@ -109,6 +113,8 @@
 							<label for="landcovCheck">Current Wisconsin Land Cover</label>
 						</div>
 					</fieldset>
+
+					<!-- Fire layer group -->
 					<fieldset id="fireCheck">
 							<legend class="checkText2"><h4>Fire Layers</h4> </legend>
 						<div>
@@ -122,14 +128,14 @@
 							<label for="firepolyCheck">Famous fires of Wisconsin (1871-Present)</label>
 						</div>
 					</fieldset>
-					<!-- <div id="legCheck">
-						<input type="checkbox" id="legendCheck" name="legendHide" value="hideLeg" />
-						<label for="legendCheck">Click to hide legends</label>
-					</div> -->
+
+					<!--Layer controls and Download button -->
 					<button id="dwn" style="width:100%"><i class="fa fa-download"></i>	Download Data</button>
 					<div id = "sequenceControls"> </div>
 					<div id="sliderInfo"></div>
 				</div>
+
+				<!-- About pane -->
 				<div class="leaflet-sidebar-pane" id="about">
 					<h1 class="leaflet-sidebar-header">
 							About
@@ -138,6 +144,8 @@
 					<p class="text">This Wisconsin Fire History Map has been put together as part of the Geography Capstone course at the University of Wisconsin-Madison by Alex "Sailor Extrordinaire" Campbell, Ben "Nicotine Addiction Survivor" Segal, Jacob "Dab Pen Outside Science Hall" Clausen, and Jack "Programming Liability" Wibben. We wanted to create an interactive representation of fire history in Wisconsin, as our state has an interesting and expansive history of wildfires that many people are surprised to  learn about. Many of the most important and significant fires in Wisconsin's recorded history can be found in our map. Some questions we wanted to address were the changes in severity of wildfires as time as progressed, as well as what factors influence fire occurance and size. We hope that this map can be used as an educational tool for those interested in learning about wildfires in the state of Wisconsin. </p>
 					<img src="img/uwLogo.png" style="width: 100%">
 				</div>
+
+				<!-- Help pane -->
 				<div class="leaflet-sidebar-pane" id="help">
 					<h1 class="leaflet-sidebar-header">
 							Help
@@ -176,6 +184,7 @@
 					</p>
 				</div>
 
+				<!-- Land Cover Supplemental Information -->
 				<div class="leaflet-sidebar-pane" id="biophysical">
 					<h1 class="leaflet-sidebar-header">
 							Biophysical Factors Influencing Fire
@@ -210,6 +219,7 @@
 					</ul>
 				</div>
 
+				<!-- Pre-Euroamerican Settlement Supplemental Information -->
 				<div class="leaflet-sidebar-pane" id="original">
 					<h1 class="leaflet-sidebar-header">
 						Pre-Euro-American Settlement
@@ -221,6 +231,7 @@
 					<p class="text">In order to understand how wildfires have shaped these landscapes over the past 150 years, we must first determine what these landscapes consisted of and how they looked. Understanding past vegetation can help us see what types of landscapes are most susceptible to fires, as well as what is natural to the region.</p>
 				</div>
 
+				<!-- Fire Suppression History Supplemental Information -->
 				<div class="leaflet-sidebar-pane" id="history">
 					<h1 class="leaflet-sidebar-header">
 						Fire Suppression History
@@ -246,7 +257,7 @@
 		</div>
 		<div id="polyInfoSidebar"></div>
 
-
+		<!-- Javascript References -->
 		<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui-1.10.3.custom.min.js"></script>
 		<script type="text/javascript" src="lib/leaflet.js"></script>
